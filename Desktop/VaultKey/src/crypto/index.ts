@@ -1,0 +1,7 @@
+export { argon2Worker } from './argon2Client'
+export { constantTimeEqual, wipe } from './ct'
+export { CryptoError, type CryptoErrorCode } from './errors'
+export { DEFAULT_KDF, KDF_LIMITS } from './kdf'
+export { openRecord, sealRecord } from './records'
+export type { Argon2Fn, EncryptedRecord, KdfCosts, VaultHeader } from './types'
+export { changeMasterPassword, createVault, resetPasswordWithRecovery, unlockWithPassword, unlockWithRecovery } from './wrap'
