@@ -1,4 +1,4 @@
-import { openRecord, sealRecord } from '../crypto/records'
+﻿import { openRecord, sealRecord } from '../crypto/records'
 import { LIMITS, normalizeInput, parseEntry, EntryError, type Entry, type EntryInput, type HistoryItem } from './entry'
 import type { RecordStorage } from './storage'
 
@@ -87,6 +87,43 @@ export function createVaultService(deps: VaultServiceDeps) {
       const time = now()
       const entry: Entry = { ...old, password: newPassword, updatedAt: time, history: pushHistory(old, time, 'rotation') }
       if (old.rotation) entry.rotation = { ...old.rotation, lastRotatedAt: time }
+      await persist(entry)
+      return entry
+    },
+
+    async restoreHistory(id: string, index: number): Promise<Entry> {
+      const old = live(id)
+      const item = old.history[index]
+      if (!item) throw new EntryError('That password version was not found.')
+      if (item.password === old.password) throw new EntryError('That is the same password as before.')
+      const time = now()
+      const history = [{ password: old.password, replacedAt: time, reason: 'edit' as const }, ...old.history.filter((_, i) => i !== index)].slice(0, LIMITS.history)
+      const entry: Entry = { ...old, password: item.password, updatedAt: time, history }
+      if (old.rotation) entry.rotation = { ...old.rotation, lastRotatedAt: time }
+      await persist(entry)
+      return entry
+    },
+
+    async toggleFavorite(id: string): Promise<Entry> {
+      const old = live(id)
+      const entry: Entry = { ...old, favorite: !old.favorite, updatedAt: now() }
+      await persist(entry)
+      return entry
+    },
+
+    /** Copies an entry under a new id. The copy starts with no history and is not marked as recently used. */
+    async duplicate(id: string): Promise<Entry> {
+      const old = live(id)
+      const time = now()
+      const title = `${old.title} (copy)`.slice(0, LIMITS.title)
+      const copy: Entry = { ...old, id: newId(), title, createdAt: time, updatedAt: time, history: [], lastAccessedAt: undefined }
+      await persist(copy)
+      return copy
+    },
+
+    async markAccessed(id: string): Promise<Entry> {
+      const old = live(id)
+      const entry: Entry = { ...old, lastAccessedAt: now() }
       await persist(entry)
       return entry
     },

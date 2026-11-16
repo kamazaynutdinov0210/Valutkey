@@ -29,6 +29,32 @@ export function assertKdfParams(p: KdfParams): void {
   if (!ok) throw new CryptoError('invalid-header')
 }
 
+/**
+ * Relative cost of a KDF header (parallelism is fixed at 1), used to detect a silent downgrade.
+ * Both inputs must already have passed `assertKdfParams`.
+ */
+export function kdfCost(p: KdfParams): number {
+  return p.memKiB * p.iterations
+}
+
+/**
+ * True when `candidate` is cheaper to attack than `baseline`. An older or tampered copy must not
+ * silently lower the password check below what this device already uses.
+ */
+export function isWeakerKdf(candidate: KdfParams, baseline: KdfParams): boolean {
+  return kdfCost(candidate) < kdfCost(baseline)
+}
+
+/**
+ * A header adopted automatically from a sync file must not lower the KDF cost below the vault's
+ * current header. Same or stronger is accepted (including a legitimate older device with matching
+ * settings); weaker is refused so a downgraded copy cannot silently weaken the password check.
+ */
+export function assertAdoptsKdfParams(candidate: KdfParams, current: KdfParams): void {
+  assertKdfParams(candidate)
+  if (isWeakerKdf(candidate, current)) throw new CryptoError('weak-header')
+}
+
 /** NFKC so the same typed password gives the same bytes on every keyboard and OS. */
 export function normalizePassword(password: string): Uint8Array {
   return utf8(password.normalize('NFKC'))

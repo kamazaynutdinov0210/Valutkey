@@ -7,6 +7,8 @@ export type CryptoErrorCode =
   | 'decrypt-failed'
   | 'corrupt'
   | 'kdf-failed'
+  | 'kdf-timeout'
+  | 'weak-header'
 
 // Messages are fixed strings on purpose: an error must never contain a secret.
 export class CryptoError extends Error {

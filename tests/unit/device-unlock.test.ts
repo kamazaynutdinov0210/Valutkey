@@ -112,6 +112,32 @@ describe('device unlock', () => {
     expect(code).toBe('failed')
   })
 
+  it('refuses to save if the vault changed during enrollment', async () => {
+    const { vkBytes, vaultId } = await setup()
+    const store = memoryStore()
+    let vault = vaultId
+    let code = ''
+    try {
+      await enrollDeviceUnlock({
+        provider: {
+          isAvailable: async () => true,
+          create: async () => {
+            vault = 'rotated-vault'
+            return { credentialId: randomBytes(16), prfEnabled: true }
+          },
+          evaluate: async () => randomBytes(32),
+        },
+        vaultKeyBytes: vkBytes,
+        vaultId,
+        store,
+        expectedVaultId: () => vault,
+      })
+    } catch (e) {
+      code = e instanceof DeviceUnlockError ? e.code : 'other'
+    }
+    expect([code, store.record]).toEqual(['stale', null])
+  })
+
   it('can be switched off', async () => {
     const { vkBytes, vaultId } = await setup()
     const provider = fakeAuthenticator(randomBytes(32))

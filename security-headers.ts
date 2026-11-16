@@ -10,8 +10,9 @@ export const CSP_DIRECTIVES = {
   'style-src': ["'self'"],
   'img-src': ["'self'", 'data:'],
   'font-src': ["'self'"],
-  // Same-origin only: the app cannot send data to any other site.
-  'connect-src': ["'self'"],
+  // Same-origin only for app data. Breach checking (when explicitly enabled by the user)
+  // uses a separate, consent-gated request to the fixed HIBP range endpoint; CSP must allow it.
+  'connect-src': ["'self'", 'https://api.pwnedpasswords.com'],
   'manifest-src': ["'self'"],
   'worker-src': ["'self'"],
   'base-uri': ["'none'"],

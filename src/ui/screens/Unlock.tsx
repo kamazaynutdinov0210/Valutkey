@@ -1,30 +1,34 @@
-import { useEffect, useState, type FormEvent } from 'react'
+﻿import { useEffect, useState, type FormEvent } from 'react'
 import { DeviceUnlockError, unlockWithDevice } from '../../unlock/device'
 import { idbDeviceUnlock, webauthnProvider } from '../../unlock/webauthn'
 import { session } from '../../vault/instance'
+import { recordActivity } from '../../security/activityStore'
 import { useSessionState } from '../hooks'
 import { Button, Field } from '../components'
 import { describeError } from '../messages'
 import { PasswordChoice, usePasswordChoice } from '../PasswordChoice'
+import { AuthLayout } from '../shell/AuthLayout'
 
-const NO_AUTOFILL = { autoComplete: 'off', autoCapitalize: 'off', autoCorrect: 'off', spellCheck: false } as const
+const NO_AUTOFILL = { autoComplete: 'current-password', autoCapitalize: 'off', autoCorrect: 'off', spellCheck: false } as const
+const recordUnlock = (ok: boolean) => void recordActivity(ok ? 'unlock-success' : 'unlock-failed')
 
 export function Unlock() {
   const [recovering, setRecovering] = useState(false)
   return (
-    <main className="mx-auto flex min-h-dvh max-w-xl flex-col gap-5 px-5 py-10">
-      <h1 className="text-3xl font-bold">VaultKey is locked</h1>
+    <AuthLayout
+      title={recovering ? 'Account recovery' : 'VaultKey is locked'}
+      subtitle={recovering ? 'Use your recovery key to set a new master password.' : 'Sign in with your master password to access your secure vault.'}
+      aside={<><div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">Encrypted locally. No account or server required.</div><div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">If available, you can unlock with this device after enabling it in Settings.</div></>}
+    >
       {recovering ? <Recover onBack={() => setRecovering(false)} /> : <PasswordUnlock onForgot={() => setRecovering(true)} />}
-    </main>
+    </AuthLayout>
   )
 }
 
 function deviceMessage(e: unknown): string | null {
-  if (e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return null // they cancelled
+  if (e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return null
   if (e instanceof DeviceUnlockError && e.code === 'stale') return 'Unlocking with this device isn’t set up for this vault. Use your master password.'
-  if (e instanceof DeviceUnlockError && e.code === 'failed') {
-    return 'Unlocking with this device isn’t working any more (your passkey may have changed). Use your master password, then turn it off and on again in Settings.'
-  }
+  if (e instanceof DeviceUnlockError && e.code === 'failed') return 'Unlocking with this device isn’t working any more (your passkey may have changed). Use your master password, then turn it off and on again in Settings.'
   return 'Unlocking with this device didn’t work. Use your master password.'
 }
 
@@ -41,44 +45,25 @@ function PasswordUnlock({ onForgot }: { onForgot: () => void }) {
   }, [vaultId])
 
   const unlockWithThisDevice = async () => {
-    setBusy(true)
-    setError('')
-    try {
-      await session.unlockWithKey(await unlockWithDevice({ provider: webauthnProvider, vaultId, store: idbDeviceUnlock }))
-    } catch (e) {
-      setBusy(false)
-      setError(deviceMessage(e) ?? '')
-    }
+    setBusy(true); setError('')
+    try { await session.unlockWithKey(await unlockWithDevice({ provider: webauthnProvider, vaultId, store: idbDeviceUnlock })); recordUnlock(true) }
+    catch (e) { recordUnlock(false); setBusy(false); setError(deviceMessage(e) ?? '') }
   }
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (!password || busy) return
-    setBusy(true)
-    setError('')
-    try {
-      await session.unlock(password)
-    } catch (e) {
-      setError(describeError(e))
-      setBusy(false)
-      setPassword('')
-    }
+    setBusy(true); setError('')
+    try { await session.unlock(password); recordUnlock(true) }
+    catch (e) { recordUnlock(false); setError(describeError(e)); setBusy(false); setPassword('') }
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-5">
-      {hasDevice && (
-        <Button disabled={busy} onClick={() => void unlockWithThisDevice()}>
-          Unlock with this device
-        </Button>
-      )}
+    <form onSubmit={submit} className="flex flex-col gap-4 transition-opacity duration-200 motion-reduce:transition-none">
+      {hasDevice && <Button disabled={busy} onClick={() => void unlockWithThisDevice()} className="w-full">Unlock with this device</Button>}
       <Field label="Master password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} error={error} autoFocus {...NO_AUTOFILL} />
-      <Button type="submit" disabled={!password || busy}>
-        {busy ? 'Unlocking…' : 'Unlock'}
-      </Button>
-      <Button variant="secondary" onClick={onForgot} disabled={busy}>
-        I forgot my password
-      </Button>
+      <Button type="submit" disabled={!password || busy} className="w-full">{busy ? 'Unlocking…' : 'Unlock'}</Button>
+      <Button variant="secondary" onClick={onForgot} disabled={busy} className="w-full">I forgot my password</Button>
     </form>
   )
 }
@@ -88,31 +73,20 @@ function Recover({ onBack }: { onBack: () => void }) {
   const [recoveryKey, setRecoveryKey] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (!choice.valid || !recoveryKey || busy) return
-    setBusy(true)
-    setError('')
-    try {
-      await session.resetWithRecovery(recoveryKey, choice.password)
-    } catch (e) {
-      setError(describeError(e))
-      setBusy(false)
-    }
+    setBusy(true); setError('')
+    try { await session.resetWithRecovery(recoveryKey, choice.password) }
+    catch (e) { setError(describeError(e)); setBusy(false) }
   }
-
   return (
-    <form onSubmit={submit} className="flex flex-col gap-5">
-      <p>Enter the recovery key you saved when you set up VaultKey, then choose a new master password.</p>
-      <Field label="Recovery key" value={recoveryKey} onChange={(e) => setRecoveryKey(e.target.value)} error={error} {...NO_AUTOFILL} />
+    <form onSubmit={submit} className="flex flex-col gap-4 transition-opacity duration-200 motion-reduce:transition-none">
+      <p className="text-sm text-slate-600 dark:text-slate-300">Enter the recovery key you saved when you set up VaultKey, then choose a new master password.</p>
+      <Field label="Recovery key" value={recoveryKey} onChange={(e) => setRecoveryKey(e.target.value)} error={error} autoComplete="off" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
       <PasswordChoice choice={choice} label="New master password" />
-      <Button type="submit" disabled={!choice.valid || !recoveryKey || busy}>
-        {busy ? 'Working… this takes a moment' : 'Set new password and unlock'}
-      </Button>
-      <Button variant="secondary" onClick={onBack} disabled={busy}>
-        Back
-      </Button>
+      <Button type="submit" disabled={!choice.valid || !recoveryKey || busy} className="w-full">{busy ? 'Working… this takes a moment' : 'Set new password and unlock'}</Button>
+      <Button variant="secondary" onClick={onBack} disabled={busy} className="w-full">Back</Button>
     </form>
   )
 }

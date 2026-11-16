@@ -4,9 +4,26 @@ import type { Argon2Request, Argon2Response } from './types'
 declare const self: DedicatedWorkerGlobalScope
 
 // Runs the slow, memory-hungry hash off the UI thread so the app never freezes.
+// The client validates costs before posting; these bounds are defense in depth so a bad
+// request cannot exhaust memory inside the worker.
+const MAX_MEM_KIB = 262144
+const MAX_ITERATIONS = 10
+
 self.onmessage = async (event: MessageEvent<Argon2Request>) => {
   const { password, salt, costs } = event.data
   try {
+    const bounded =
+      Number.isInteger(costs.memKiB) &&
+      Number.isInteger(costs.iterations) &&
+      costs.memKiB > 0 &&
+      costs.memKiB <= MAX_MEM_KIB &&
+      costs.iterations > 0 &&
+      costs.iterations <= MAX_ITERATIONS
+    if (!bounded) {
+      const fail: Argon2Response = { ok: false }
+      self.postMessage(fail)
+      return
+    }
     const raw = await argon2idRaw(password, salt, costs)
     const hash = raw.slice() // own buffer, so it can be transferred
     raw.fill(0)

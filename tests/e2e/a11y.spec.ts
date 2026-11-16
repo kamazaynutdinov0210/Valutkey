@@ -2,8 +2,9 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { createVault, tab } from './helpers'
 
-// WCAG 2.1 levels A and AA: the standard the project promises. (Best-practice rules are not part of it.)
-const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+// WCAG 2.2 levels A and AA: the standard the project targets (2.0/2.1 A/AA are subsets).
+// Best-practice rules are not part of it.
+const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']
 
 /** Runs the scan and adds each distinct problem to `found` (rule + element), so one run reports everything. */
 async function scan(page: Page, where: string, found: Map<string, string>) {
@@ -40,7 +41,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await scan(page, 'first screen', found)
     await page.getByRole('button', { name: 'I already have a backup file' }).click()
     await scan(page, 'restore screen', found)
-    await page.getByRole('button', { name: 'Back' }).click()
+    await page.getByRole('button', { name: 'Back', exact: true }).click()
 
     await createVault(page)
     await scan(page, 'empty vault', found)

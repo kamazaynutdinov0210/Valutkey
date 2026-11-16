@@ -1,6 +1,7 @@
 import { openRecord, sealRecord } from '../crypto/records'
 import type { EncryptedRecord, VaultHeader } from '../crypto/types'
 import { assertHeader } from '../crypto/wrap'
+import { assertAdoptsKdfParams } from '../crypto/kdf'
 import { parseEntry } from '../vault/entry'
 import type { RecordStorage } from '../vault/storage'
 import { buildVaultFile, openManifest, parseVaultFile, SyncError } from './file'
@@ -109,6 +110,8 @@ export function createSyncService(deps: SyncDeps) {
     let headerAdopted = false
     if (manifest.headerChangedAt > (header.changedAt ?? 0)) {
       assertHeader(file.header)
+      // The master password changed on another device. Refuse a silent KDF downgrade.
+      assertAdoptsKdfParams(file.header.kdf, header.kdf)
       await deps.adoptHeader(file.header) // the master password was changed on another device
       headerAdopted = true
     }

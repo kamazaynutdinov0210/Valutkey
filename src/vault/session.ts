@@ -21,6 +21,7 @@ export interface SessionDeps {
   storage: HeaderStorage
   records?: RecordStorage // only used to remove leftovers when a brand-new vault is created
   replacer?: VaultReplacer // atomic whole-vault replacement (new vault key, or replace from a file)
+  scrubDeviceBindings?: () => Promise<void> // clear device-unlock/sync/hint state tied to the replaced vault
   costs?: KdfCosts // tests use cheaper settings; the app uses the default
 }
 
@@ -87,6 +88,7 @@ export function createSession(deps: SessionDeps) {
       if (!deps.replacer) throw new Error('no-replacer')
       if (state.status === 'loading') throw new Error('loading')
       await deps.replacer.replaceAll(next.header, next.records)
+      await deps.scrubDeviceBindings?.().catch(() => undefined)
       set({ status: 'unlocked', header: next.header, vaultKey: next.vaultKey })
     },
 

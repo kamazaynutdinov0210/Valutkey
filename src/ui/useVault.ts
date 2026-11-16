@@ -69,9 +69,30 @@ export function useVault() {
       setEntries(need().list())
       return entry
     },
+    async restoreHistory(id: string, index: number): Promise<Entry> {
+      const entry = await need().restoreHistory(id, index)
+      setEntries(need().list())
+      return entry
+    },
+    async toggleFavorite(id: string): Promise<Entry> {
+      const entry = await need().toggleFavorite(id)
+      setEntries(need().list())
+      return entry
+    },
+    async markAccessed(id: string): Promise<void> {
+      try {
+        await need().markAccessed(id)
+        setEntries(need().list())
+      } catch { /* ignore */ }
+    },
     async remove(id: string): Promise<void> {
       await need().remove(id)
       setEntries(need().list())
+    },
+    async duplicate(id: string): Promise<Entry> {
+      const entry = await need().duplicate(id)
+      setEntries(need().list())
+      return entry
     },
   }
 }

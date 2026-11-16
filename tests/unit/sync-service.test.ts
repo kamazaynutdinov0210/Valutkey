@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import { argon2idRaw } from '../../src/crypto/argon2'
 import { CryptoError } from '../../src/crypto/errors'
 import { openRecord } from '../../src/crypto/records'
+import { DEFAULT_KDF } from '../../src/crypto/kdf'
 import type { VaultHeader } from '../../src/crypto/types'
 import { changeMasterPassword, createVault, unlockWithPassword } from '../../src/crypto/wrap'
 import { defaultSettings } from '../../src/generator'
@@ -300,6 +301,40 @@ describe('master password changed on one device', () => {
     const result = merged(await a.sync.syncWith(target))
     expect(result.headerAdopted).toBe(false)
     expect(parseVaultFile(target.text ?? '').header.verifier).toBe(newHeader.verifier)
+  })
+
+  it('refuses to adopt a weaker KDF header even when it is newer', async () => {
+    // The vault was created with the strong default KDF; a tampered/older copy carries a weaker one.
+    const strong = await createVault(argon2idRaw, PASSWORD, DEFAULT_KDF)
+    const newPassword = 'a completely new long passphrase'
+    const weakHeader = await changeMasterPassword(argon2idRaw, strong.header, PASSWORD, newPassword, TEST_COSTS)
+    expect(weakHeader.kdf.memKiB).toBeLessThan(strong.header.kdf.memKiB)
+    expect(weakHeader.changedAt ?? 0).toBeGreaterThan(strong.header.changedAt ?? 0)
+
+    const writerTarget = memoryTarget()
+    const writer = createSyncService({
+      vaultKey: strong.vaultKey,
+      getHeader: () => weakHeader,
+      adoptHeader: async () => undefined,
+      records: memoryRecords(),
+      state: memoryState(),
+      now: tick,
+      newId: () => 'writer',
+    })
+    await writer.syncWith(writerTarget) // file now advertises the weaker, newer header
+
+    const adopted: VaultHeader[] = []
+    const reader = createSyncService({
+      vaultKey: strong.vaultKey,
+      getHeader: () => strong.header,
+      adoptHeader: async (h) => void adopted.push(h),
+      records: memoryRecords(),
+      state: memoryState(),
+      now: tick,
+      newId: () => 'reader',
+    })
+    expect(await codeOf(reader.syncWith(writerTarget))).toBe('weak-header')
+    expect(adopted).toHaveLength(0)
   })
 })
 

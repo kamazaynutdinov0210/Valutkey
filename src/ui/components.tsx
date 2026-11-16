@@ -4,17 +4,17 @@ import type { Strength } from '../generator'
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' }
 
 const BUTTON_STYLES = {
-  primary: 'bg-blue-800 text-white hover:bg-blue-900 dark:bg-blue-300 dark:text-slate-900 dark:hover:bg-blue-200',
+  primary: 'bg-[rgb(var(--vk-accent-strong))] text-white shadow-sm hover:opacity-90 active:scale-[0.98]',
   secondary:
-    'border border-slate-400 bg-transparent text-slate-900 hover:bg-slate-100 dark:border-slate-500 dark:text-slate-100 dark:hover:bg-slate-800',
-  danger: 'bg-red-800 text-white hover:bg-red-900 dark:bg-red-300 dark:text-slate-900 dark:hover:bg-red-200',
+    'border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] text-[rgb(var(--vk-text))] shadow-sm hover:bg-[rgb(var(--vk-surface-2))]',
+  danger: 'bg-[rgb(var(--vk-danger))] text-white shadow-sm hover:opacity-90 active:scale-[0.98]',
 }
 
 export function Button({ variant = 'primary', className = '', ...props }: ButtonProps) {
   return (
     <button
       type="button"
-      className={`min-h-11 rounded-xl px-5 py-2 text-base font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${BUTTON_STYLES[variant]} ${className}`}
+      className={`min-h-11 rounded-xl px-5 py-2 text-base font-semibold transition-all duration-150 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 ${BUTTON_STYLES[variant]} ${className}`}
       {...props}
     />
   )
@@ -36,7 +36,7 @@ export function Field({ label, hint, error, ...input }: { label: string; hint?: 
         id={id}
         aria-describedby={hint ? `${id}-hint` : undefined}
         aria-invalid={error ? true : undefined}
-        className="min-h-11 rounded-xl border border-slate-500 bg-white px-3 text-base text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+        className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] px-3 text-base text-[rgb(var(--vk-text))] shadow-sm transition-colors focus:border-[rgb(var(--vk-accent))] focus:outline-none"
         {...input}
       />
       {error && (
@@ -58,17 +58,26 @@ export function TextArea({ label, ...input }: { label: string } & TextareaHTMLAt
       <textarea
         id={id}
         rows={4}
-        className="rounded-xl border border-slate-500 bg-white px-3 py-2 text-base text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+        className="rounded-xl border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition-colors focus:border-blue-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-400"
         {...input}
       />
     </div>
   )
 }
 
+export function Card({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) {
+  return (
+    <section className={`flex flex-col gap-3 rounded-2xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] p-4 shadow-[var(--vk-shadow)] ${className}`}>
+      {title && <h2 className="text-lg font-semibold text-[rgb(var(--vk-text))]">{title}</h2>}
+      {children}
+    </section>
+  )
+}
+
 export function Toggle({ label, ...input }: { label: string } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
   return (
-    <label className="flex min-h-11 items-center gap-3">
-      <input type="checkbox" className="h-6 w-6 shrink-0 accent-blue-800 dark:accent-blue-300" {...input} />
+    <label className="flex min-h-11 items-center gap-3 text-[rgb(var(--vk-text))]">
+      <input type="checkbox" className="h-6 w-6 shrink-0 accent-[rgb(var(--vk-accent))]" {...input} />
       <span>{label}</span>
     </label>
   )
@@ -115,8 +124,8 @@ export function Screen({ title, children }: { title: string; children: ReactNode
     heading.current?.focus({ preventScroll: true })
   }, [])
   return (
-    <section className="flex max-w-xl flex-col gap-5">
-      <h1 ref={heading} tabIndex={-1} className="text-2xl font-bold focus:outline-none">
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      <h1 ref={heading} tabIndex={-1} className="text-2xl font-bold tracking-tight text-[rgb(var(--vk-text))] focus:outline-none">
         {title}
       </h1>
       {children}

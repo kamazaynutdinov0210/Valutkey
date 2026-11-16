@@ -1,16 +1,22 @@
 import { useState } from 'react'
+import type { VaultApi } from '../useVault'
 import { Button, Screen } from '../components'
 import { lockVault } from '../lock'
 import { AUTO_LOCK_CHOICES, getTheme, setAutoLockMinutes, setTheme, type ThemePref } from '../prefs'
 import type { SyncService } from '../../sync/service'
 import { BackupSection } from './BackupSection'
 import { SecuritySection } from './SecuritySection'
+import { ActivitySection } from './ActivitySection'
+import { ImportSection } from './ImportSection'
 import { DataSection, InstallSection, ReminderSection } from './SettingsSections'
 
 const SELECT_STYLE =
   'min-h-11 rounded-xl border border-slate-500 bg-white px-3 text-base text-slate-900 dark:bg-slate-800 dark:text-slate-100'
 
 interface Props {
+  vault: VaultApi
+  vaultKey?: CryptoKey
+  vaultId?: string
   minutes: number
   onMinutesChange: (m: number) => void
   background: boolean
@@ -19,7 +25,7 @@ interface Props {
   onSynced: () => Promise<void>
 }
 
-export function Settings({ minutes, onMinutesChange, background, onBackgroundChange, sync, onSynced }: Props) {
+export function Settings({ vault, vaultKey, vaultId, minutes, onMinutesChange, background, onBackgroundChange, sync, onSynced }: Props) {
   const [theme, setThemeState] = useState<ThemePref>(getTheme)
 
   return (
@@ -63,7 +69,9 @@ export function Settings({ minutes, onMinutesChange, background, onBackgroundCha
       </label>
 
       <SecuritySection />
-      <BackupSection sync={sync} onChanged={onSynced} />
+      <BackupSection sync={sync} onChanged={onSynced} vaultKey={vaultKey} vaultId={vaultId} />
+      <ImportSection vault={vault} vaultKey={vaultKey} vaultId={vaultId} />
+      <ActivitySection vaultKey={vaultKey} vaultId={vaultId} />
       <ReminderSection background={background} onBackgroundChange={onBackgroundChange} />
       <InstallSection />
       <DataSection />

@@ -51,18 +51,31 @@ async function keyFrom(secret: Uint8Array): Promise<CryptoKey> {
 /**
  * Turns on device unlock. `vaultKeyBytes` come from the master password (the caller proved it), so
  * setting this up always needs the password. Nothing is saved unless the device really supports it.
+ * `expectedVaultId` (when provided) is re-checked after user/biometric interaction and immediately
+ * before saving, so a concurrent vault replacement or key rotation cannot leave a mismatched record.
  */
 export async function enrollDeviceUnlock(input: {
   provider: PrfProvider
   vaultKeyBytes: Uint8Array
   vaultId: string
   store: DeviceUnlockStore
+  expectedVaultId?: () => string | null
 }): Promise<void> {
+  const check = () => {
+    const expected = input.expectedVaultId?.()
+    if (expected !== undefined && expected !== null && expected !== input.vaultId) throw new DeviceUnlockError('stale')
+  }
+  check()
   const { credentialId, prfEnabled } = await input.provider.create()
   if (!prfEnabled) throw new DeviceUnlockError('unsupported')
   const prfSalt = randomBytes(32)
+  check()
   const kek = await keyFrom(await input.provider.evaluate(credentialId, prfSalt)) // a second prompt proves it works
+  check()
   const wrapped = await encrypt(kek, input.vaultKeyBytes, aad(input.vaultId))
+  check()
+  const existing = await input.store.load()
+  if (existing && existing.vaultId !== input.vaultId && input.expectedVaultId) throw new DeviceUnlockError('stale')
   await input.store.save({ credentialId: toB64(credentialId), prfSalt: toB64(prfSalt), wrapped, vaultId: input.vaultId })
 }
 

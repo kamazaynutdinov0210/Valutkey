@@ -234,6 +234,7 @@ function DeviceUnlock({ header, available, on, onChange }: { header: VaultHeader
   const { busy, error, run } = useAction((e) => {
     if (e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return 'Cancelled. Nothing was changed.'
     if (e instanceof DeviceUnlockError && e.code === 'unsupported') return 'This device or browser can’t do this. It needs passkey support.'
+    if (e instanceof DeviceUnlockError && e.code === 'stale') return 'The vault changed while setting this up. Try again.'
     return undefined
   })
 
@@ -264,7 +265,16 @@ function DeviceUnlock({ header, available, on, onChange }: { header: VaultHeader
     void run(async () => {
       const keyBytes = await unwrapVaultKeyBytes(argon2Worker, header, current) // proves the master password
       try {
-        await enrollDeviceUnlock({ provider: webauthnProvider, vaultKeyBytes: keyBytes, vaultId: header.vaultId, store: idbDeviceUnlock })
+        await enrollDeviceUnlock({
+          provider: webauthnProvider,
+          vaultKeyBytes: keyBytes,
+          vaultId: header.vaultId,
+          store: idbDeviceUnlock,
+          expectedVaultId: () => {
+            const s = session.getState()
+            return s.status === 'unlocked' ? s.header.vaultId : s.status === 'locked' ? s.header.vaultId : null
+          },
+        })
       } finally {
         wipe(keyBytes)
       }

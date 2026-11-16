@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { argon2idRaw } from '../../src/crypto/argon2'
 import { utf8 } from '../../src/crypto/encoding'
-import { hkdf, normalizePassword } from '../../src/crypto/kdf'
-import { fromHex, hex } from './helpers'
+import { assertAdoptsKdfParams, assertKdfParams, hkdf, isWeakerKdf, kdfCost, normalizePassword } from '../../src/crypto/kdf'
+import type { KdfParams } from '../../src/crypto/types'
+import { codeOf, fromHex, hex } from './helpers'
 
 describe('Argon2id', () => {
   // Reference vector from the Argon2 project's own test suite (phc-winner-argon2, test.c):
@@ -44,5 +45,42 @@ describe('normalizePassword', () => {
   it('treats composed and decomposed Unicode (and full-width forms) as the same password', () => {
     expect(hex(normalizePassword('caf\u00e9'))).toBe(hex(normalizePassword('cafe\u0301')))
     expect(hex(normalizePassword('ＡＢＣ１２３'))).toBe(hex(normalizePassword('ABC123')))
+  })
+})
+
+describe('KDF policy', () => {
+  const salt = 'AAAAAAAAAAAAAAAAAAAAAA' // 16 zero bytes, base64url
+  const params = (memKiB: number, iterations: number): KdfParams => ({ alg: 'argon2id', salt, memKiB, iterations, parallelism: 1 })
+
+  it('rejects settings below the absolute limits', () => {
+    expect(() => assertKdfParams(params(1024, 2))).toThrow()
+    expect(() => assertKdfParams(params(65536, 1))).toThrow()
+    expect(() => assertKdfParams(params(4 * 1024 * 1024, 2))).toThrow()
+  })
+
+  it('ranks cost by memory times iterations', () => {
+    const strong = params(65536, 3)
+    const weak = params(65536, 2)
+    expect(kdfCost(strong)).toBeGreaterThan(kdfCost(weak))
+    expect(isWeakerKdf(weak, strong)).toBe(true)
+    expect(isWeakerKdf(strong, weak)).toBe(false)
+  })
+
+  it('allows equal or stronger headers on adoption', () => {
+    const current = params(19456, 2)
+    expect(() => assertAdoptsKdfParams(params(19456, 2), current)).not.toThrow()
+    expect(() => assertAdoptsKdfParams(params(65536, 3), current)).not.toThrow()
+  })
+
+  it('refuses a silent downgrade on adoption', async () => {
+    const current = params(65536, 3)
+    const adopt = Promise.resolve().then(() => assertAdoptsKdfParams(params(19456, 2), current))
+    expect(await codeOf(adopt)).toBe('weak-header')
+  })
+
+  it('still rejects absurd headers during adoption', () => {
+    const current = params(19456, 2)
+    expect(() => assertAdoptsKdfParams(params(1024, 2), current)).toThrow()
+    expect(() => assertAdoptsKdfParams(params(4 * 1024 * 1024, 2), current)).toThrow()
   })
 })

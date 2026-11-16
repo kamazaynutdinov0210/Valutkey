@@ -13,9 +13,9 @@ describe('Content Security Policy', () => {
     expect(csp).toContain("script-src 'self' 'wasm-unsafe-eval'")
   })
 
-  it('denies everything by default and blocks network egress', () => {
+  it('denies everything by default and limits network egress', () => {
     expect(csp).toContain("default-src 'none'")
-    expect(csp).toContain("connect-src 'self'")
+    expect(csp).toContain("connect-src 'self' https://api.pwnedpasswords.com")
   })
 
   it('has no wildcard or plain-http sources', () => {

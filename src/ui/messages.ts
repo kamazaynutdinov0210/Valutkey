@@ -14,6 +14,16 @@ export function describeError(error: unknown): string {
       case 'corrupt':
       case 'invalid-header':
         return 'The saved vault looks damaged. If you have a backup, restore it.'
+      case 'invalid-input':
+        return 'That input wasn’t valid. Check it and try again.'
+      case 'decrypt-failed':
+        return 'That data couldn’t be read with this vault’s key.'
+      case 'kdf-failed':
+        return 'VaultKey couldn’t prepare the password check on this device. Try again, or use a different browser.'
+      case 'kdf-timeout':
+        return 'The password check took too long on this device. Try again, or use a different browser.'
+      case 'weak-header':
+        return 'The synced vault uses weaker password settings than this device, so VaultKey won’t adopt them. Open it on the device that changed the password (with the current version) and sync again.'
     }
   }
   if (error instanceof SyncError) {

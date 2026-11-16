@@ -6,16 +6,21 @@ import { notificationPermission, shouldNotify, showDueNotification, todayKey } f
 import { dueEntries } from '../../reminders/schedule'
 import { lockVault } from '../lock'
 import { getAutoLockMinutes, getBackgroundEnabled, getLastNotifiedDay, getNotifyEnabled, setLastNotifiedDay } from '../prefs'
+import { useSessionState } from '../hooks'
 import { Generator } from '../screens/Generator'
 import { Reminders } from '../screens/Reminders'
 import { Settings } from '../screens/Settings'
 import { Vault } from '../screens/Vault'
+import { Dashboard } from '../screens/Dashboard'
+import { Applications } from '../screens/Applications'
 import { useSync } from '../useSync'
 import { useVault } from '../useVault'
 
-type Tab = 'vault' | 'generator' | 'reminders' | 'settings'
+type Tab = 'dashboard' | 'vault' | 'applications' | 'generator' | 'reminders' | 'settings'
 const TABS: { id: Tab; label: string }[] = [
+  { id: 'dashboard', label: 'Home' },
   { id: 'vault', label: 'Vault' },
+  { id: 'applications', label: 'Apps' },
   { id: 'generator', label: 'Generator' },
   { id: 'reminders', label: 'Reminders' },
   { id: 'settings', label: 'Settings' },
@@ -23,8 +28,13 @@ const TABS: { id: Tab; label: string }[] = [
 
 export function Shell() {
   const [tab, setTab] = useState<Tab>('vault')
+  const [focusEntryId, setFocusEntryId] = useState<string | undefined>(undefined)
+  const [healthSignal, setHealthSignal] = useState(0)
   const [minutes, setMinutes] = useState(getAutoLockMinutes)
   const vault = useVault() // lives here so entries stay loaded while switching tabs
+  const sessionState = useSessionState()
+  const vaultKey = sessionState.status === 'unlocked' ? sessionState.vaultKey : undefined
+  const vaultId = sessionState.status === 'unlocked' ? sessionState.header.vaultId : undefined
   const [background, setBackground] = useState(getBackgroundEnabled)
   const sync = useSync()
   const reload = useRef(vault.reload)
@@ -84,11 +94,11 @@ export function Shell() {
   }, [minutes])
 
   return (
-    <div className="min-h-dvh md:flex">
+    <div className="min-h-dvh bg-[rgb(var(--vk-bg))] md:flex">
       {/* One nav element: a bottom tab bar on phones, a sidebar from tablet width up. */}
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-10 flex border-t border-slate-300 bg-white pb-[env(safe-area-inset-bottom)] dark:border-slate-700 dark:bg-slate-900 md:sticky md:top-0 md:h-dvh md:w-56 md:shrink-0 md:flex-col md:gap-1 md:border-r md:border-t-0 md:p-3"
+        className="fixed inset-x-0 bottom-0 z-20 flex border-t border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-[rgb(var(--vk-surface))]/80 md:sticky md:top-0 md:h-dvh md:w-64 md:shrink-0 md:flex-col md:gap-1 md:border-r md:border-t-0 md:p-3"
       >
         {TABS.map((t) => (
           <button
@@ -96,10 +106,10 @@ export function Shell() {
             type="button"
             aria-current={tab === t.id ? 'page' : undefined}
             onClick={() => setTab(t.id)}
-            className={`flex min-h-14 flex-1 items-center justify-center text-sm font-semibold md:min-h-11 md:flex-none md:justify-start md:rounded-xl md:px-4 md:text-base ${
+            className={`flex min-h-14 flex-1 items-center justify-center gap-2 rounded-none text-sm font-semibold transition-all duration-150 md:min-h-11 md:flex-none md:justify-start md:rounded-xl md:px-4 md:text-base ${
               tab === t.id
-                ? 'bg-blue-100 text-blue-900 dark:bg-slate-800 dark:text-blue-200'
-                : 'text-slate-800 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
+                ? 'bg-[rgb(var(--vk-accent-soft))] text-[rgb(var(--vk-accent))]'
+                : 'text-[rgb(var(--vk-text-muted))] hover:bg-[rgb(var(--vk-surface-2))]'
             }`}
           >
             {t.label}
@@ -114,11 +124,22 @@ export function Shell() {
           </button>
         ))}
       </nav>
-      <main className="min-w-0 flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-10">
-        {tab === 'vault' && <Vault vault={vault} dueCount={dueCount} onReview={() => setTab('reminders')} />}
+      <main id="main-content" className="min-w-0 flex-1 px-4 pb-28 pt-6 sm:px-6 md:px-10 md:pb-10">
+        {tab === 'dashboard' && (
+          <Dashboard
+            vault={vault}
+            dueCount={dueCount}
+            onOpenVault={() => setTab('vault')}
+            onHealth={() => { setHealthSignal((n) => n + 1); setTab('vault') }}
+            onOpenEntry={(id) => { setFocusEntryId(id); setTab('vault') }}
+            onReview={() => setTab('reminders')}
+          />
+        )}
+        {tab === 'vault' && <Vault vault={vault} dueCount={dueCount} onReview={() => setTab('reminders')} focusEntryId={focusEntryId} healthSignal={healthSignal} />}
+        {tab === 'applications' && <Applications vault={vault} />}
         {tab === 'generator' && <Generator />}
         {tab === 'reminders' && <Reminders vault={vault} />}
-        {tab === 'settings' && <Settings minutes={minutes} onMinutesChange={setMinutes} background={background} onBackgroundChange={setBackground} sync={sync} onSynced={vault.reload} />}
+        {tab === 'settings' && <Settings vault={vault} vaultKey={vaultKey} vaultId={vaultId} minutes={minutes} onMinutesChange={setMinutes} background={background} onBackgroundChange={setBackground} sync={sync} onSynced={vault.reload} />}
       </main>
     </div>
   )

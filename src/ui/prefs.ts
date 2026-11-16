@@ -45,3 +45,12 @@ export const setLastNotifiedDay = (day: string): void => write('vk.lastNotifiedD
 
 export const getBackgroundEnabled = (): boolean => read('vk.background') === '1'
 export const setBackgroundEnabled = (on: boolean): void => write('vk.background', on ? '1' : '0')
+export const getBreachConsent = (): boolean => read('vk.breachConsent') === '1'
+export const setBreachConsent = (on: boolean): void => write('vk.breachConsent', on ? '1' : '0')
+
+/** When the last encrypted backup was saved on this device (ms), or null. Non-secret. */
+export function getLastBackupAt(): number | null {
+  const n = Number(read('vk.lastBackupAt'))
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+export const setLastBackupAt = (ts: number): void => write('vk.lastBackupAt', String(ts))

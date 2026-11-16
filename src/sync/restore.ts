@@ -27,14 +27,21 @@ export async function restoreFromText(input: {
   argon2: Argon2Fn
   records: RecordStorage
   state: SyncStateStore
-  session: Pick<Session, 'adoptVault'>
+  session: Pick<Session, 'adoptVault'> & Partial<Pick<Session, 'replaceVault'>>
   newId?: () => string
+  beforeCommit?: () => Promise<void>
 }): Promise<void> {
   const { file, vaultKey, manifest } = await openBackup(input.text, input.secret, input.argon2)
-  await input.records.clear()
-  await input.records.putMany(file.records)
+  await input.beforeCommit?.()
+  if (input.session.replaceVault) {
+    await input.session.replaceVault({ header: file.header, vaultKey, records: file.records })
+  } else {
+    // Fallback for limited session implementations (tests): clear + write records, then save header last.
+    await input.records.clear()
+    await input.records.putMany(file.records)
+    await input.session.adoptVault(file.header, vaultKey)
+  }
   await input.state.save({ deviceId: (input.newId ?? (() => crypto.randomUUID()))(), revision: manifest.revision, lastSyncedAt: null })
-  await input.session.adoptVault(file.header, vaultKey) // the header goes in last: a vault "exists" only once it is saved
 }
 
 /**
@@ -47,7 +54,7 @@ export async function replaceFromText(input: {
   argon2: Argon2Fn
   state: SyncStateStore
   session: Pick<Session, 'replaceVault'>
-  afterReplace?: () => Promise<void> // for example: forget the old biometric setup
+  afterReplace?: () => Promise<void> // for example: forget device-local bindings
   newId?: () => string
 }): Promise<{ header: VaultHeader; records: EncryptedRecord[] }> {
   const { file, vaultKey, manifest } = await openBackup(input.text, input.secret, input.argon2)

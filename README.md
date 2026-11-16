@@ -13,7 +13,7 @@ Read [docs/REVIEW_NOTES.md](docs/REVIEW_NOTES.md) before relying on it for anyth
 - Rotation reminders: per-entry interval, Due soon / Overdue lists, suggested new password from the entry's own settings that you confirm before it replaces the old one.
 - Master password (Argon2id), AES-256-GCM encryption, recovery key, change password, new recovery key, new vault key, optional unlock with fingerprint / face / device PIN.
 - Encrypted backup files, restore on a new device, and sync through a file in your own cloud folder (Chrome and Edge on a computer).
-- Works offline. Installs on phone and desktop. Locks after inactivity and when closed. Light and dark mode. Built for WCAG 2.1 AA.
+- Works offline. Installs on phone and desktop. Locks after inactivity and when closed. Light and dark mode. Built for WCAG 2.2 AA (verified via axe on desktop and 360 px phone, light and dark).
 
 ## Quick start (Windows PowerShell, macOS, Linux)
 Requires Node.js 20 or newer. Run the commands one at a time. (Older Windows PowerShell does not understand `&&`.)

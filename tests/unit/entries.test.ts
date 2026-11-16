@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest'
+﻿import { describe, expect, it } from 'vitest'
 import { importAesKey, randomBytes } from '../../src/crypto/aead'
 import type { EncryptedRecord } from '../../src/crypto/types'
 import { defaultSettings } from '../../src/generator'
-import { EntryError, LIMITS, type EntryInput } from '../../src/vault/entry'
+import { EntryError, LIMITS, safeHttpUrl, type EntryInput } from '../../src/vault/entry'
 import { createVaultService } from '../../src/vault/entries'
 import type { RecordStorage } from '../../src/vault/storage'
 
@@ -271,3 +271,16 @@ describe('reminders on entries', () => {
     }
   })
 })
+
+describe('safeHttpUrl', () => {
+  it('allows http/https and normalizes bare hosts', () => {
+    expect(safeHttpUrl('example.com')).toBe('https://example.com/')
+    expect(safeHttpUrl('http://example.com')).toBe('http://example.com/')
+  })
+  it('blocks dangerous schemes', () => {
+    expect(safeHttpUrl('javascript:alert(1)')).toBeNull()
+    expect(safeHttpUrl('data:text/html,hi')).toBeNull()
+    expect(safeHttpUrl('vbscript:hi')).toBeNull()
+  })
+})
+
