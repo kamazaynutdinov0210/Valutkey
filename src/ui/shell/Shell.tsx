@@ -18,12 +18,17 @@ import { useVault } from '../useVault'
 
 type Tab = 'dashboard' | 'vault' | 'applications' | 'generator' | 'reminders' | 'settings'
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'dashboard', label: 'Home' },
-  { id: 'vault', label: 'Vault' },
+  { id: 'dashboard', label: 'Overview' },
+  { id: 'vault', label: 'My Vault' },
   { id: 'applications', label: 'Apps' },
   { id: 'generator', label: 'Generator' },
   { id: 'reminders', label: 'Reminders' },
   { id: 'settings', label: 'Settings' },
+]
+const NAV_GROUPS: { title: string; ids: Tab[] }[] = [
+  { title: 'WORKSPACE', ids: ['vault', 'generator', 'reminders'] },
+  { title: 'SECURITY', ids: ['dashboard', 'applications'] },
+  { title: 'SYSTEM', ids: ['settings'] },
 ]
 
 export function Shell() {
@@ -100,29 +105,68 @@ export function Shell() {
         aria-label="Main"
         className="fixed inset-x-0 bottom-0 z-20 flex border-t border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-[rgb(var(--vk-surface))]/80 md:sticky md:top-0 md:h-dvh md:w-64 md:shrink-0 md:flex-col md:gap-1 md:border-r md:border-t-0 md:p-3"
       >
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            aria-current={tab === t.id ? 'page' : undefined}
-            onClick={() => setTab(t.id)}
-            className={`flex min-h-14 flex-1 items-center justify-center gap-2 rounded-none text-sm font-semibold transition-all duration-150 md:min-h-11 md:flex-none md:justify-start md:rounded-xl md:px-4 md:text-base ${
-              tab === t.id
-                ? 'bg-[rgb(var(--vk-accent-soft))] text-[rgb(var(--vk-accent))]'
-                : 'text-[rgb(var(--vk-text-muted))] hover:bg-[rgb(var(--vk-surface-2))]'
-            }`}
-          >
-            {t.label}
-            {t.id === 'reminders' && dueCount > 0 && (
-              <>
-                <span aria-hidden="true" className="ml-2 min-w-6 rounded-full bg-red-800 px-2 py-0.5 text-center text-xs font-bold text-white">
-                  {dueCount}
-                </span>
-                <span className="sr-only">, {dueCount} due</span>
-              </>
-            )}
-          </button>
-        ))}
+        <div className="hidden px-2 pb-2 md:block">
+          <p className="text-xs font-bold tracking-[0.2em] text-[rgb(var(--vk-accent))]">VAULTKEY</p>
+          <p className="text-xs text-[rgb(var(--vk-text-muted))]">PRIVATE SECURITY VAULT</p>
+        </div>
+        <div className="hidden flex-1 flex-col gap-4 overflow-y-auto md:flex">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.title} className="flex flex-col gap-1">
+              <p className="px-2 text-[10px] font-bold tracking-[0.18em] text-[rgb(var(--vk-text-muted))]">{group.title}</p>
+              {group.ids.map((id) => {
+                const t = TABS.find((x) => x.id === id)!
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    aria-current={tab === t.id ? 'page' : undefined}
+                    onClick={() => setTab(t.id)}
+                    className={`flex min-h-11 items-center justify-between gap-2 rounded-xl px-3 text-base font-semibold transition-all duration-150 ${
+                      tab === t.id
+                        ? 'bg-[rgb(var(--vk-accent-soft))] text-[rgb(var(--vk-accent))]'
+                        : 'text-[rgb(var(--vk-text-muted))] hover:bg-[rgb(var(--vk-surface-2))]'
+                    }`}
+                  >
+                    <span>{t.label}</span>
+                    {t.id === 'reminders' && dueCount > 0 && (
+                      <>
+                        <span aria-hidden="true" className="min-w-6 rounded-full bg-red-800 px-2 py-0.5 text-center text-xs font-bold text-white">
+                          {dueCount}
+                        </span>
+                        <span className="sr-only">, {dueCount} due</span>
+                      </>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="flex w-full gap-0 md:hidden">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              aria-current={tab === t.id ? 'page' : undefined}
+              onClick={() => setTab(t.id)}
+              className={`flex min-h-14 flex-1 items-center justify-center gap-2 rounded-none text-sm font-semibold transition-all duration-150 ${
+                tab === t.id
+                  ? 'bg-[rgb(var(--vk-accent-soft))] text-[rgb(var(--vk-accent))]'
+                  : 'text-[rgb(var(--vk-text-muted))] hover:bg-[rgb(var(--vk-surface-2))]'
+              }`}
+            >
+              {t.label}
+              {t.id === 'reminders' && dueCount > 0 && (
+                <>
+                  <span aria-hidden="true" className="ml-2 min-w-6 rounded-full bg-red-800 px-2 py-0.5 text-center text-xs font-bold text-white">
+                    {dueCount}
+                  </span>
+                  <span className="sr-only">, {dueCount} due</span>
+                </>
+              )}
+            </button>
+          ))}
+        </div>
       </nav>
       <main id="main-content" className="min-w-0 flex-1 px-4 pb-28 pt-6 sm:px-6 md:px-10 md:pb-10">
         {tab === 'dashboard' && (

@@ -7,14 +7,14 @@ export function PasswordHealth({ entries, onOpen, onBack }: { entries: Entry[]; 
   return (
     <Screen title="Password Health">
       <Button variant="secondary" onClick={onBack} className="self-start">Back to vault</Button>
-      <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-slate-900">
-        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Overall score</p>
-        <p className="text-4xl font-bold tracking-tight">{report.score}<span className="text-xl text-slate-500">/100</span></p>
-        <p className="text-sm text-slate-700 dark:text-slate-300">{report.formula}</p>
+      <Card className="bg-gradient-to-br from-emerald-50 to-[rgb(var(--vk-surface))] dark:from-[rgb(var(--vk-surface))] dark:to-[rgb(var(--vk-surface))]">
+        <p className="text-sm font-medium text-[rgb(var(--vk-text-muted))]">Overall score</p>
+        <p className="text-4xl font-bold tracking-tight">{report.score}<span className="text-xl text-[rgb(var(--vk-text-muted))]">/100</span></p>
+        <p className="text-sm text-[rgb(var(--vk-text-muted))]">{report.formula}</p>
       </Card>
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Health summary">
         {[['Total', report.total], ['Strong', report.strong], ['Weak', report.weak], ['Reused', report.reused], ['Old', report.old], ['Attention', report.needsAttention], ['Missing username', report.missingUsername], ['Insecure HTTP', report.insecureUrls]].map(([label, value]) => (
-          <li key={String(label)} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900"><span className="block text-xs font-medium uppercase tracking-wide text-slate-500">{label}</span><span className="text-xl font-semibold">{value}</span></li>
+          <li key={String(label)} className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] p-3 shadow-sm"><span className="block text-xs font-medium uppercase tracking-wide text-[rgb(var(--vk-text-muted))]">{label}</span><span className="text-xl font-semibold">{value}</span></li>
         ))}
       </ul>
       {report.reusedGroups.length > 0 && (
@@ -30,12 +30,12 @@ export function PasswordHealth({ entries, onOpen, onBack }: { entries: Entry[]; 
       {report.weakEntries.length > 0 && (
         <Card title="Items needing attention">
           <ul className="flex flex-col gap-2">{report.weakEntries.map((e) => (
-            <li key={e.entryId}><button type="button" onClick={() => onOpen(e.entryId)} className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-left transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:bg-slate-800"><span className="font-medium">{e.title}</span><span className="mt-1 block text-sm text-slate-700 dark:text-slate-300">{e.issues.map((i) => i.label).join(' · ')}</span></button></li>
+            <li key={e.entryId}><button type="button" onClick={() => onOpen(e.entryId)} className="w-full rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3 text-left transition-colors hover:bg-[rgb(var(--vk-surface))]"><span className="font-medium">{e.title}</span><span className="mt-1 block text-sm text-[rgb(var(--vk-text-muted))]">{e.issues.map((i) => i.label).join(' · ')}</span></button></li>
           ))}</ul>
         </Card>
       )}
       {report.suggestions.length > 0 && (
-        <Card title="Suggested actions"><ul className="list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">{report.suggestions.map((s, i) => <li key={i}><strong>{s.title}:</strong> {s.text}</li>)}</ul></Card>
+        <Card title="Suggested actions"><ul className="list-disc space-y-1 pl-5 text-sm text-[rgb(var(--vk-text-muted))]">{report.suggestions.map((s, i) => <li key={i}><strong>{s.title}:</strong> {s.text}</li>)}</ul></Card>
       )}
     </Screen>
   )

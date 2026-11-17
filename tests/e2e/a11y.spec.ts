@@ -8,6 +8,10 @@ const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']
 
 /** Runs the scan and adds each distinct problem to `found` (rule + element), so one run reports everything. */
 async function scan(page: Page, where: string, found: Map<string, string>) {
+  // Let CSS transitions/animations (e.g. segmented control restyling) settle before scanning,
+  // and move the pointer off any control so hover styles don't affect contrast measurements.
+  await page.mouse.move(0, 0)
+  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished))).catch(() => {})
   const { violations } = await new AxeBuilder({ page }).withTags(WCAG).analyze()
   for (const v of violations) {
     for (const node of v.nodes) {

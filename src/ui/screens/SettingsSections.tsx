@@ -7,7 +7,7 @@ import { Button, Card, Toggle } from '../components'
 import { useInstallKind } from '../hooks'
 import { getNotifyEnabled, setBackgroundEnabled, setNotifyEnabled } from '../prefs'
 
-const SMALL = 'text-sm text-slate-700 dark:text-slate-300'
+const SMALL = 'text-sm text-[rgb(var(--vk-text-muted))]'
 
 export function ReminderSection({ background, onBackgroundChange }: { background: boolean; onBackgroundChange: (on: boolean) => void }) {
   const [permission, setPermission] = useState(notificationPermission)

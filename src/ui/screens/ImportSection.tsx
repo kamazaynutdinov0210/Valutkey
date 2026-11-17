@@ -44,18 +44,18 @@ export function ImportSection({ vault, vaultKey, vaultId }: { vault: VaultApi; v
 
   return (
     <Card title="Import passwords" className="gap-3">
-      <p className="text-sm text-slate-700 dark:text-slate-300">Import a CSV file (including Bitwarden-compatible exports). Data stays local, you’ll see a preview, duplicates are skipped by default, and unsafe URL schemes are removed. If the CSV contains unencrypted passwords, handle the file carefully and delete it after import.</p>
+      <p className="text-sm text-[rgb(var(--vk-text-muted))]">Import a CSV file (including Bitwarden-compatible exports). Data stays local, you’ll see a preview, duplicates are skipped by default, and unsafe URL schemes are removed. If the CSV contains unencrypted passwords, handle the file carefully and delete it after import.</p>
       <Field label="Choose CSV file" type="file" accept=".csv,text/csv" onChange={(e) => void choose(e.target.files?.[0])} />
       {preview && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-800/40">
+        <div className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3 text-sm">
           <p><strong>Detected:</strong> {preview.detectedFormat}. <strong>Rows:</strong> {preview.records.length}. Select items to import.</p>
           {preview.errors.map((e) => <p key={e} className="text-amber-800 dark:text-amber-300" role="status">{e}</p>)}
           <ul className="mt-2 max-h-56 space-y-1 overflow-auto" aria-label="Import preview">
             {preview.records.slice(0, 80).map((r, i) => (
-              <li key={i}><label className="flex cursor-pointer gap-2 rounded p-1 hover:bg-white/60 dark:hover:bg-slate-800"><input type="checkbox" checked={r.selected} onChange={() => toggle(i)} /><span className="min-w-0"><span className="font-medium">{r.title}</span> {r.username ? <span className="text-slate-600 dark:text-slate-400">({r.username})</span> : ''} {r.duplicateOf ? <em className="text-slate-500">— {r.duplicateOf}</em> : ''} {r.errors.length ? <em className="text-amber-700 dark:text-amber-300">— {r.errors.join(' ')}</em> : ''}</span></label></li>
+              <li key={i}><label className="flex cursor-pointer gap-2 rounded p-1 hover:bg-[rgb(var(--vk-surface))]"><input type="checkbox" checked={r.selected} onChange={() => toggle(i)} /><span className="min-w-0"><span className="font-medium">{r.title}</span> {r.username ? <span className="text-[rgb(var(--vk-text-muted))]">({r.username})</span> : ''} {r.duplicateOf ? <em className="text-[rgb(var(--vk-text-muted))]">— {r.duplicateOf}</em> : ''} {r.errors.length ? <em className="text-amber-700 dark:text-amber-300">— {r.errors.join(' ')}</em> : ''}</span></label></li>
             ))}
           </ul>
-          {preview.records.length > 80 && <p className="text-slate-500">Showing first 80 rows in preview.</p>}
+          {preview.records.length > 80 && <p className="text-[rgb(var(--vk-text-muted))]">Showing first 80 rows in preview.</p>}
           <Button disabled={busy || !preview.records.some((r) => r.selected)} onClick={() => void run()} className="mt-3">{busy ? 'Importing…' : `Import selected (${preview.records.filter((r)=>r.selected).length})`}</Button>
         </div>
       )}

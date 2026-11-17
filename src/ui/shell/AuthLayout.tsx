@@ -4,12 +4,12 @@ export function AuthLayout({ brand, title, subtitle, children, aside }: { brand?
   return (
     <div className="min-h-dvh bg-[rgb(var(--vk-bg))] text-[rgb(var(--vk-text))]">
       <div className="mx-auto grid min-h-dvh w-full max-w-6xl lg:grid-cols-[1.1fr_minmax(0,480px)]">
-        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-indigo-900 via-slate-900 to-black p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute inset-0 opacity-40" aria-hidden="true" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(129,140,248,.35), transparent 35%), radial-gradient(circle at 80% 30%, rgba(96,165,250,.25), transparent 30%), radial-gradient(circle at 40% 80%, rgba(129,140,248,.2), transparent 30%)' }} />
+        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-950 to-black p-10 text-white lg:flex lg:flex-col lg:justify-between">
+          <div className="absolute inset-0 opacity-40" aria-hidden="true" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(52,211,153,.35), transparent 35%), radial-gradient(circle at 80% 30%, rgba(16,185,129,.25), transparent 30%), radial-gradient(circle at 40% 80%, rgba(52,211,153,.2), transparent 30%)' }} />
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-medium backdrop-blur">{brand ?? 'VaultKey'}</div>
             <h2 className="mt-8 text-4xl font-semibold tracking-tight">Your vault, on this device.</h2>
-            <p className="mt-4 max-w-md text-base text-indigo-100">Encrypted locally. No account, no server. Recovery is yours alone.</p>
+            <p className="mt-4 max-w-md text-base text-emerald-100">Encrypted locally. No account, no server. Recovery is yours alone.</p>
           </div>
           <div className="relative grid gap-3 text-sm text-indigo-100">
             {aside ?? (

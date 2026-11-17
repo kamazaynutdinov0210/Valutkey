@@ -8,9 +8,9 @@ const date = (ts: number) => new Date(ts).toLocaleString(undefined, { dateStyle:
 
 function Stat({ label, value, tone = '' }: { label: string; value: number; tone?: string }) {
   return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900 ${tone}`}>
+    <div className={`rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] p-3 ${tone}`}>
       <div className="text-2xl font-bold">{value}</div>
-      <div className="text-sm text-slate-700 dark:text-slate-300">{label}</div>
+      <div className="text-sm text-[rgb(var(--vk-text-muted))]">{label}</div>
     </div>
   )
 }
@@ -43,9 +43,9 @@ export function Dashboard({ vault, dueCount, onOpenVault, onHealth, onOpenEntry,
       <Card title="Security score" className="gap-2">
         <div className="flex items-end gap-3">
           <span className="text-4xl font-bold">{data.score}</span>
-          <span className="pb-1 text-slate-700 dark:text-slate-300">out of 100</span>
+          <span className="pb-1 text-[rgb(var(--vk-text-muted))]">out of 100</span>
         </div>
-        <p className="text-sm text-slate-700 dark:text-slate-300">A local heuristic from this vault’s data. It does not guarantee security.</p>
+        <p className="text-sm text-[rgb(var(--vk-text-muted))]">A local heuristic from this vault’s data. It does not guarantee security.</p>
       </Card>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -58,7 +58,7 @@ export function Dashboard({ vault, dueCount, onOpenVault, onHealth, onOpenEntry,
       </div>
 
       {dueCount > 0 && (
-        <div role="status" className="flex flex-col gap-2 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-slate-800 dark:text-amber-100">
+        <div role="status" className="flex flex-col gap-2 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-[rgb(var(--vk-surface))] dark:text-amber-100">
           <p className="font-medium">{dueCount === 1 ? '1 password is due for a change.' : `${dueCount} passwords are due for a change.`}</p>
           <Button variant="secondary" onClick={onReview} className="self-start">Review reminders</Button>
         </div>
@@ -76,14 +76,14 @@ export function Dashboard({ vault, dueCount, onOpenVault, onHealth, onOpenEntry,
 
       <Card title="Upcoming rotations">
         {data.upcoming.length === 0 ? (
-          <p className="text-slate-700 dark:text-slate-300">No rotations are due soon.</p>
+          <p className="text-[rgb(var(--vk-text-muted))]">No rotations are due soon.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {data.upcoming.map(({ entry, status }) => (
               <li key={entry.id}>
-                <button type="button" onClick={() => onOpenEntry(entry.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-left hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
+                <button type="button" onClick={() => onOpenEntry(entry.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-4 py-3 text-left hover:bg-[rgb(var(--vk-surface-2))]">
                   <span className="truncate font-semibold">{entry.title}</span>
-                  <span className={`shrink-0 text-sm ${status.state === 'overdue' ? 'text-red-800 dark:text-red-300' : 'text-slate-700 dark:text-slate-300'}`}>{describeDue(status)}</span>
+                  <span className={`shrink-0 text-sm ${status.state === 'overdue' ? 'text-red-800 dark:text-red-300' : 'text-[rgb(var(--vk-text-muted))]'}`}>{describeDue(status)}</span>
                 </button>
               </li>
             ))}
@@ -93,14 +93,14 @@ export function Dashboard({ vault, dueCount, onOpenVault, onHealth, onOpenEntry,
 
       <Card title="Recently updated">
         {data.recentlyUpdated.length === 0 ? (
-          <p className="text-slate-700 dark:text-slate-300">No items yet.</p>
+          <p className="text-[rgb(var(--vk-text-muted))]">No items yet.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {data.recentlyUpdated.map((entry) => (
               <li key={entry.id}>
-                <button type="button" onClick={() => onOpenEntry(entry.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-left hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
+                <button type="button" onClick={() => onOpenEntry(entry.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-4 py-3 text-left hover:bg-[rgb(var(--vk-surface-2))]">
                   <span className="truncate font-semibold">{entry.favorite ? '★ ' : ''}{entry.title}</span>
-                  <span className="shrink-0 text-sm text-slate-700 dark:text-slate-300">{date(entry.updatedAt)}</span>
+                  <span className="shrink-0 text-sm text-[rgb(var(--vk-text-muted))]">{date(entry.updatedAt)}</span>
                 </button>
               </li>
             ))}
@@ -109,7 +109,7 @@ export function Dashboard({ vault, dueCount, onOpenVault, onHealth, onOpenEntry,
       </Card>
 
       <Card title="Last backup">
-        <p className="text-slate-700 dark:text-slate-300">
+        <p className="text-[rgb(var(--vk-text-muted))]">
           {data.lastBackupAt === null ? 'No backup saved from this device yet.' : `Last saved ${date(data.lastBackupAt)}.`}
         </p>
       </Card>

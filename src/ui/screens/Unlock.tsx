@@ -82,7 +82,7 @@ function Recover({ onBack }: { onBack: () => void }) {
   }
   return (
     <form onSubmit={submit} className="flex flex-col gap-4 transition-opacity duration-200 motion-reduce:transition-none">
-      <p className="text-sm text-slate-600 dark:text-slate-300">Enter the recovery key you saved when you set up VaultKey, then choose a new master password.</p>
+      <p className="text-sm text-[rgb(var(--vk-text-muted))]">Enter the recovery key you saved when you set up VaultKey, then choose a new master password.</p>
       <Field label="Recovery key" value={recoveryKey} onChange={(e) => setRecoveryKey(e.target.value)} error={error} autoComplete="off" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
       <PasswordChoice choice={choice} label="New master password" />
       <Button type="submit" disabled={!choice.valid || !recoveryKey || busy} className="w-full">{busy ? 'Working… this takes a moment' : 'Set new password and unlock'}</Button>

@@ -64,10 +64,10 @@ export function EntryForm({ vault, entry, onCancel, onSaved }: Props) {
             <Button variant="secondary" className="flex-1" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</Button>
           </div>
           <StrengthMeter strength={strength} />
-          <details className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/40">
+          <details className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3">
             <summary className="min-h-11 cursor-pointer py-1 font-semibold">Password style</summary>
             <div className="flex flex-col gap-3 pt-2">
-              <p className="text-sm text-slate-700 dark:text-slate-300">These choices are saved with this entry and used the next time a new password is made for it.</p>
+              <p className="text-sm text-[rgb(var(--vk-text-muted))]">These choices are saved with this entry and used the next time a new password is made for it.</p>
               <ModeSwitch settings={generator} onChange={setGenerator} />
               <GeneratorOptions settings={generator} onChange={setGenerator} />
             </div>
@@ -82,7 +82,7 @@ export function EntryForm({ vault, entry, onCancel, onSaved }: Props) {
               <div className="flex flex-wrap items-end gap-3">
                 <div className="min-w-28 flex-1"><Field label="Every" type="number" inputMode="numeric" min={1} max={ROTATION_MAX[unit]} value={every} onChange={(e) => setEvery(e.target.value)} /></div>
                 <label className="min-w-32 flex-1 flex flex-col gap-1"><span className="font-medium">Unit</span>
-                  <select className="min-h-11 rounded-xl border border-slate-400 bg-white px-3 text-base text-slate-900 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" value={unit} onChange={(e) => setUnit(e.target.value as RotationUnit)}>
+                  <select className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))] shadow-sm" value={unit} onChange={(e) => setUnit(e.target.value as RotationUnit)}>
                     <option value="day">days</option><option value="week">weeks</option><option value="month">months</option>
                   </select>
                 </label>

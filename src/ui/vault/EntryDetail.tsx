@@ -11,8 +11,8 @@ const date = (ts: number) => new Date(ts).toLocaleString(undefined, { dateStyle:
 
 function Row({ label, children, action }: { label: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-slate-200 pb-3 last:border-0 last:pb-0 dark:border-slate-700">
-      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{label}</span>
+    <div className="flex flex-col gap-1 border-b border-[rgb(var(--vk-border))] pb-3 last:border-0 last:pb-0">
+      <span className="text-sm font-medium text-[rgb(var(--vk-text-muted))]">{label}</span>
       <div className="break-all text-base">{children}</div>
       {action && <div className="flex flex-wrap gap-2 pt-1">{action}</div>}
     </div>
@@ -65,26 +65,26 @@ export function EntryDetail({ vault, entry, onBack, onEdit, onRotate }: { vault:
         <Row label="Password" action={<><Button variant="secondary" aria-pressed={show} onClick={() => setShow(!show)}>{show ? 'Hide password' : 'Show password'}</Button><Button onClick={() => void copy(entry.password, 'Password')}>Copy password</Button><Button variant="secondary" disabled={breachBusy} onClick={() => void checkBreach()}>{breachBusy ? 'Checking…' : 'Check breach'}</Button></>}>
           <span data-testid="password-value" className="font-mono text-lg">{show ? entry.password : '••••••••••'}</span>
         </Row>
-        <details className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-800/40">
+        <details className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3 text-sm">
           <summary className="cursor-pointer font-medium">Breach check (optional)</summary>
-          <p className="pt-2 text-slate-700 dark:text-slate-300">Uses k-anonymity: only the first 5 characters of a SHA-1 hash are sent. Your password is never sent. SHA-1 is used only for this lookup protocol, not for vault encryption. No lookup runs without your consent.</p>
+          <p className="pt-2 text-[rgb(var(--vk-text-muted))]">Uses k-anonymity: only the first 5 characters of a SHA-1 hash are sent. Your password is never sent. SHA-1 is used only for this lookup protocol, not for vault encryption. No lookup runs without your consent.</p>
           <div className="pt-2"><Toggle label="Allow breach checking" checked={breachConsent} onChange={(e) => { setBreachConsent(e.target.checked); setBreachConsentState(e.target.checked) }} /></div>
         </details>
-        {entry.url && <Row label="Website">{link ? <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-800 underline underline-offset-2 dark:text-blue-300">{entry.url}</a> : entry.url}</Row>}
+        {entry.url && <Row label="Website">{link ? <a href={link} target="_blank" rel="noopener noreferrer" className="text-[rgb(var(--vk-accent))] underline underline-offset-2">{entry.url}</a> : entry.url}</Row>}
         {entry.category && <Row label="Category">{entry.category}</Row>}
         {entry.notes && <Row label="Notes"><span className="whitespace-pre-wrap text-base">{entry.notes}</span></Row>}
-        {entry.tags.length > 0 && <Row label="Tags"><span className="flex flex-wrap gap-1">{entry.tags.map((t) => <span key={t} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-sm dark:bg-slate-800">{t}</span>)}</span></Row>}
+        {entry.tags.length > 0 && <Row label="Tags"><span className="flex flex-wrap gap-1">{entry.tags.map((t) => <span key={t} className="rounded-full bg-[rgb(var(--vk-surface-2))] px-2.5 py-0.5 text-sm">{t}</span>)}</span></Row>}
         {entry.rotation && <Row label="Reminder" action={<Button variant="secondary" onClick={onRotate}>Change password</Button>}><span className="text-base">Change it {describeRotation(entry.rotation)}. {describeDue(rotationStatus(entry.rotation, Date.now()))}.</span></Row>}
       </Card>
 
       {entry.history.length > 0 && (
         <Card title={`Password history (${entry.history.length})`}>
           <p className="text-sm font-medium">{entry.history.length === 1 ? '1 earlier password is kept.' : `${entry.history.length} earlier passwords are kept.`}</p>
-          <p className="text-sm text-slate-700 dark:text-slate-300">Previous versions are encrypted. Restoring saves the current password to history and re-encrypts the entry.</p>
+          <p className="text-sm text-[rgb(var(--vk-text-muted))]">Previous versions are encrypted. Restoring saves the current password to history and re-encrypts the entry.</p>
           <ul className="flex flex-col gap-2">
             {entry.history.map((h, i) => (
-              <li key={`${h.replacedAt}-${i}`} className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-800/40">
-                <p className="font-medium">Replaced {date(h.replacedAt)} <span className="font-normal text-slate-600 dark:text-slate-400">({h.reason})</span></p>
+              <li key={`${h.replacedAt}-${i}`} className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3 text-sm">
+                <p className="font-medium">Replaced {date(h.replacedAt)} <span className="font-normal text-[rgb(var(--vk-text-muted))]">({h.reason})</span></p>
                 <p className="mt-1 font-mono break-all">{shownHistory[i] ? h.password : '••••••••••'}</p>
                 <div className="flex flex-wrap gap-2 pt-2">
                   <Button variant="secondary" onClick={() => setShownHistory((s) => ({ ...s, [i]: !s[i] }))}>{shownHistory[i] ? 'Hide' : 'Reveal'}</Button>
@@ -97,7 +97,7 @@ export function EntryDetail({ vault, entry, onBack, onEdit, onRotate }: { vault:
         </Card>
       )}
 
-      <p className="text-sm text-slate-600 dark:text-slate-400">Saved {date(entry.createdAt)}. Last changed {date(entry.updatedAt)}{entry.lastAccessedAt ? `. Last used ${date(entry.lastAccessedAt)}.` : '.'}</p>
+      <p className="text-sm text-[rgb(var(--vk-text-muted))]">Saved {date(entry.createdAt)}. Last changed {date(entry.updatedAt)}{entry.lastAccessedAt ? `. Last used ${date(entry.lastAccessedAt)}.` : '.'}</p>
       <p role="status" aria-live="polite" className="min-h-6 text-sm">{note}</p>
 
       {confirming ? (

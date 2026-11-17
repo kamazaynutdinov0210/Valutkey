@@ -31,12 +31,12 @@ export function Setup() {
   return (
     <AuthLayout title="Welcome to VaultKey" subtitle="Create your local, encrypted vault. No account or server is required.">
       <form onSubmit={create} className="flex flex-col gap-4 transition-opacity duration-200 motion-reduce:transition-none">
-        <p className="text-sm text-slate-600 dark:text-slate-300">Choose one master password. It unlocks everything, so make it strong and don’t reuse it. Your passwords are locked on this device.</p>
+        <p className="text-sm text-[rgb(var(--vk-text-muted))]">Choose one master password. It unlocks everything, so make it strong and don’t reuse it. Your passwords are locked on this device.</p>
         <PasswordChoice choice={choice} />
         {error && <p role="alert" className="font-medium text-red-800 dark:text-red-300">{error}</p>}
         <Button type="submit" disabled={!choice.valid || busy} className="w-full">{busy ? 'Creating your vault… this takes a moment' : 'Create my vault'}</Button>
-        <hr className="border-slate-200 dark:border-slate-700" />
-        <p className="text-sm text-slate-600 dark:text-slate-300">Already use VaultKey on another device, or have a backup file?</p>
+        <hr className="border-[rgb(var(--vk-border))]" />
+        <p className="text-sm text-[rgb(var(--vk-text-muted))]">Already use VaultKey on another device, or have a backup file?</p>
         <Button variant="secondary" onClick={() => setRestoring(true)} disabled={busy} className="w-full">I already have a backup file</Button>
       </form>
     </AuthLayout>

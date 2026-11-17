@@ -121,11 +121,11 @@ export function BackupSection({ sync, onChanged, vaultKey, vaultId }: { sync: Sy
 
   return (
     <Card title="Backup and sync" className="gap-3">
-      <p className="text-sm text-slate-700 dark:text-slate-300">
+      <p className="text-sm text-[rgb(var(--vk-text-muted))]">
         A backup file holds your passwords locked with your master password and recovery key. Keep copies somewhere you trust, such as a cloud drive. Anyone who
         gets the file can try to guess your master password, so keep it private.
       </p>
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-950 dark:border-blue-900/50 dark:bg-blue-950/20 dark:text-blue-100" role="note">
+      <div className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3 text-sm text-[rgb(var(--vk-text))]" role="note">
         <p className="font-medium">Reliability tips</p>
         <ul className="mt-1 list-disc space-y-1 pl-5">
           <li>Create backups regularly and keep at least one offline copy.</li>
@@ -136,37 +136,37 @@ export function BackupSection({ sync, onChanged, vaultKey, vaultId }: { sync: Sy
 
       <div className="flex flex-wrap gap-2">
         <Button variant="secondary" disabled={isBusy || !sync} onClick={() => void saveBackup()}>Save a backup file</Button>
-        <label className={`flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-slate-400 bg-white px-5 py-2 text-center text-base font-semibold shadow-sm transition-colors hover:bg-slate-50 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-blue-700 dark:border-slate-500 dark:bg-slate-900 dark:hover:bg-slate-800 ${isBusy || !sync ? 'pointer-events-none opacity-50' : ''}`}>
+        <label className={`flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-5 py-2 text-center text-base font-semibold text-[rgb(var(--vk-text))] shadow-sm transition-colors hover:bg-[rgb(var(--vk-surface-2))] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[rgb(var(--vk-accent))] ${isBusy || !sync ? 'pointer-events-none opacity-50' : ''}`}>
           Choose a backup file to merge
           <input type="file" accept=".vaultkey,application/json" className="sr-only" disabled={isBusy || !sync}
             onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; if (file) void mergeFile(file) }} />
         </label>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/40">
+      <div className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3">
         <h3 className="font-semibold">Keep devices in sync</h3>
         {canFolderSync ? (
           <div className="mt-2 flex flex-col gap-2">
-            <p className="text-sm text-slate-700 dark:text-slate-300">Choose a file inside your cloud folder (Dropbox, OneDrive, iCloud Drive, Google Drive). VaultKey merges it with this device and writes the result back. Your cloud service only ever sees locked data. Sync one device at a time and let the cloud finish uploading before you sync another.</p>
+            <p className="text-sm text-[rgb(var(--vk-text-muted))]">Choose a file inside your cloud folder (Dropbox, OneDrive, iCloud Drive, Google Drive). VaultKey merges it with this device and writes the result back. Your cloud service only ever sees locked data. Sync one device at a time and let the cloud finish uploading before you sync another.</p>
             <p className="text-sm"><span className="font-medium">Sync file:</span> {fileName ?? 'No sync file chosen.'}</p>
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" disabled={isBusy || !sync} onClick={() => void chooseFile()}>{fileName ? 'Choose a different file' : 'Choose sync file'}</Button>
               {fileName && (<><Button disabled={isBusy || !sync} onClick={() => void syncNow()}>Sync now</Button><Button variant="secondary" disabled={isBusy} onClick={() => void stop()}>Stop syncing</Button></>)}
             </div>
-            {fileName && <p className="text-xs text-slate-600 dark:text-slate-400">If your browser asks for file permission again, allow it so VaultKey can read and update the same sync file safely.</p>}
+            {fileName && <p className="text-xs text-[rgb(var(--vk-text-muted))]">If your browser asks for file permission again, allow it so VaultKey can read and update the same sync file safely.</p>}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">This browser can’t keep a cloud-folder file in sync by itself. Instead, save a backup file into your cloud folder now and then, and on another device choose it under “Choose a backup file to merge”.</p>
+          <p className="mt-2 text-sm text-[rgb(var(--vk-text-muted))]">This browser can’t keep a cloud-folder file in sync by itself. Instead, save a backup file into your cloud folder now and then, and on another device choose it under “Choose a backup file to merge”.</p>
         )}
       </div>
 
       {older && (
-        <div role="alertdialog" aria-label="Older copy" aria-describedby="older-copy-desc" className="flex flex-col gap-3 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-slate-800 dark:text-amber-100">
+        <div role="alertdialog" aria-label="Older copy" aria-describedby="older-copy-desc" className="flex flex-col gap-3 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-[rgb(var(--vk-surface))] dark:text-amber-100">
           <p id="older-copy-desc" className="font-medium">This copy is older than one this device has already seen. That can happen if a cloud service restored an old version, if the file was replaced, or if you picked an old backup. Merging it will not remove anything newer, but you should only continue if you trust this file.</p>
           <div className="flex flex-wrap gap-2"><Button className="flex-1" disabled={isBusy} onClick={confirmOlder}>Merge anyway</Button><Button variant="secondary" className="flex-1" disabled={isBusy} onClick={() => setOlder(null)}>Cancel</Button></div>
         </div>
       )}
-      {busy && <p role="status" aria-live="polite" className="text-sm font-medium text-slate-700 dark:text-slate-300">{busy}</p>}
+      {busy && <p role="status" aria-live="polite" className="text-sm font-medium text-[rgb(var(--vk-text-muted))]">{busy}</p>}
       <p role="status" aria-live="polite" className="min-h-5 text-sm">{message}</p>
       {error && <p role="alert" className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>}
     </Card>

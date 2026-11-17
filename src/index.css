@@ -4,36 +4,69 @@
 
 @layer base {
   :root {
-    --vk-bg: 248 250 252;
+    --vk-bg: 248 250 249;
     --vk-surface: 255 255 255;
-    --vk-surface-2: 241 245 249;
-    --vk-border: 226 232 240;
-    --vk-text: 15 23 42;
-    --vk-text-muted: 71 85 105;
-    --vk-accent: 79 70 229;
-    --vk-accent-strong: 79 70 229;
-    --vk-accent-soft: 224 231 255;
+    --vk-surface-2: 240 253 244;
+    --vk-border: 209 213 219;
+    --vk-text: 5 9 7;
+    --vk-text-muted: 71 85 79;
+    --vk-accent: 4 120 87;
+    --vk-accent-strong: 4 120 87;
+    --vk-accent-stronger: 4 95 70;
+    --vk-accent-soft: 209 250 229;
     --vk-success: 22 163 74;
     --vk-warning: 217 119 6;
     --vk-danger: 220 38 38;
     --vk-radius: 1rem;
-    --vk-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+    --vk-shadow: 0 1px 2px 0 rgb(5 9 7 / 0.05);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --vk-bg: 11 15 25;
-      --vk-surface: 17 24 39;
-      --vk-surface-2: 30 41 59;
-      --vk-border: 51 65 85;
-      --vk-text: 241 245 249;
-      --vk-text-muted: 148 163 184;
-      --vk-accent: 165 180 252;
-      --vk-accent-strong: 79 70 229;
-      --vk-accent-soft: 49 46 129;
+      --vk-bg: 5 9 7;
+      --vk-surface: 11 21 16;
+      --vk-surface-2: 16 28 21;
+      --vk-border: 26 53 39;
+      --vk-text: 240 247 242;
+      --vk-text-muted: 161 181 168;
+      --vk-accent: 52 211 153;
+      --vk-accent-strong: 4 120 87;
+      --vk-accent-stronger: 4 95 70;
+      --vk-accent-soft: 6 78 59;
       --vk-success: 74 222 128;
       --vk-warning: 251 191 36;
       --vk-danger: 248 113 113;
     }
+  }
+  /* Manual theme override support */
+  [data-theme='light'] {
+    --vk-bg: 248 250 249;
+    --vk-surface: 255 255 255;
+    --vk-surface-2: 240 253 244;
+    --vk-border: 209 213 219;
+    --vk-text: 5 9 7;
+    --vk-text-muted: 71 85 79;
+    --vk-accent: 4 120 87;
+    --vk-accent-strong: 4 120 87;
+    --vk-accent-stronger: 4 95 70;
+    --vk-accent-soft: 209 250 229;
+    --vk-success: 22 163 74;
+    --vk-warning: 217 119 6;
+    --vk-danger: 220 38 38;
+  }
+  [data-theme='dark'] {
+    --vk-bg: 5 9 7;
+    --vk-surface: 11 21 16;
+    --vk-surface-2: 16 28 21;
+    --vk-border: 26 53 39;
+    --vk-text: 240 247 242;
+    --vk-text-muted: 161 181 168;
+    --vk-accent: 52 211 153;
+    --vk-accent-strong: 4 120 87;
+    --vk-accent-stronger: 4 95 70;
+    --vk-accent-soft: 6 78 59;
+    --vk-success: 74 222 128;
+    --vk-warning: 251 191 36;
+    --vk-danger: 248 113 113;
   }
   body {
     background-color: rgb(var(--vk-bg));

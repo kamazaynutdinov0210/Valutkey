@@ -155,7 +155,7 @@ export function Applications({ vault }: Props) {
     return (
       <Screen title="Applications & Accounts">
         <div className="flex flex-col gap-3" aria-busy="true">
-          {[1, 2, 3].map((i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-slate-200 dark:bg-slate-800" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-[rgb(var(--vk-surface-2))]" />)}
         </div>
       </Screen>
     )
@@ -164,7 +164,7 @@ export function Applications({ vault }: Props) {
   return (
     <Screen title="Applications & Accounts">
       {toast && (
-        <div role="status" className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-slate-900 px-4 py-2 text-sm text-white shadow-lg dark:bg-slate-100 dark:text-slate-900">
+        <div role="status" className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[rgb(var(--vk-text))] px-4 py-2 text-sm text-[rgb(var(--vk-bg))] shadow-lg">
           {toast}
         </div>
       )}
@@ -182,10 +182,10 @@ export function Applications({ vault }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search applications or accounts"
-          className="min-h-11 flex-1 rounded-xl border border-slate-400 bg-white px-3 text-base dark:bg-slate-800"
+          className="min-h-11 flex-1 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]"
           aria-label="Search"
         />
-        <select value={filter} onChange={(e) => setFilter(e.target.value as Filter)} className="min-h-11 rounded-xl border border-slate-400 bg-white px-3 text-base dark:bg-slate-800">
+        <select value={filter} onChange={(e) => setFilter(e.target.value as Filter)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]">
           <option value="all">All active</option>
           <option value="active">Active</option>
           <option value="archived">Archived</option>
@@ -195,7 +195,7 @@ export function Applications({ vault }: Props) {
           <option value="auto-on">Automation on</option>
           <option value="auto-off">Automation off</option>
         </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="min-h-11 rounded-xl border border-slate-400 bg-white px-3 text-base dark:bg-slate-800">
+        <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]">
           <option value="name">Sort: Name</option>
           <option value="lastChange">Sort: Last change</option>
           <option value="nextChange">Sort: Next change</option>
@@ -205,7 +205,7 @@ export function Applications({ vault }: Props) {
 
       {filteredGroups.length === 0 && (
         <Card>
-          <p className="text-sm text-slate-700 dark:text-slate-300">
+          <p className="text-sm text-[rgb(var(--vk-text-muted))]">
             {filter === 'archived' ? 'No archived accounts.' : 'No applications match. Save passwords in the Vault with an application name to see them here.'}
           </p>
         </Card>
@@ -215,28 +215,28 @@ export function Applications({ vault }: Props) {
         <Card key={name} title={`${accounts[0]?.icon ? accounts[0].icon + ' ' : ''}${name} (${accounts.length} account${accounts.length === 1 ? '' : 's'})`}>
           <ul className="flex flex-col gap-3">
             {accounts.map((e) => (
-              <li key={e.id} className="flex flex-col gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+              <li key={e.id} className="flex flex-col gap-2 rounded-xl border border-[rgb(var(--vk-border))] p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       {e.favorite && <span aria-label="Favorite">★</span>}
                       <span className="font-semibold truncate">{e.icon ? e.icon + ' ' : ''}{e.username || e.email || e.title}</span>
                     </div>
-                    {e.email && <div className="text-sm text-slate-600 dark:text-slate-300 truncate">{e.email}</div>}
-                    {e.url && <div className="text-xs text-slate-500 truncate">{e.url}</div>}
+                    {e.email && <div className="text-sm text-[rgb(var(--vk-text-muted))] truncate">{e.email}</div>}
+                    {e.url && <div className="text-xs text-[rgb(var(--vk-text-muted))] truncate">{e.url}</div>}
                   </div>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${e.accountStatus === 'inactive' ? 'bg-slate-200 text-slate-700' : 'bg-green-100 text-green-900'}`}>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${e.accountStatus === 'inactive' ? 'bg-[rgb(var(--vk-surface-2))] text-[rgb(var(--vk-text-muted))]' : 'bg-[rgb(var(--vk-accent-soft))] text-[rgb(var(--vk-accent))]'}`}>
                     {e.accountStatus === 'inactive' ? 'Inactive' : 'Active'}
                   </span>
                 </div>
-                <div className="text-sm text-slate-700 dark:text-slate-300">
+                <div className="text-sm text-[rgb(var(--vk-text-muted))]">
                   {e.nextPasswordChangeAt ? `Next change: ${new Date(e.nextPasswordChangeAt).toLocaleDateString()}` : 'No scheduled change'}
                   {e.lastPasswordChangeAt ? ` · Last: ${new Date(e.lastPasswordChangeAt).toLocaleDateString()}` : ''}
                   {e.automationLastStatus ? ` · Automation: ${e.automationLastStatus}` : ''}
                   {e.snoozedUntil && e.snoozedUntil > Date.now() ? ` · Snoozed until ${new Date(e.snoozedUntil).toLocaleDateString()}` : ''}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <button type="button" disabled={busyId === e.id} onClick={() => void toggleFavorite(e)} className="min-h-11 rounded-xl border border-slate-400 px-3 text-sm font-medium">
+                  <button type="button" disabled={busyId === e.id} onClick={() => void toggleFavorite(e)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] px-3 text-sm font-medium text-[rgb(var(--vk-text))]">
                     {e.favorite ? 'Unfavorite' : 'Favorite'}
                   </button>
                   <Toggle label={e.automationEnabled ? 'Automation ON' : 'Automation OFF'} checked={Boolean(e.automationEnabled)} disabled={busyId === e.id} onChange={() => void toggleAutomation(e)} />
@@ -244,16 +244,16 @@ export function Applications({ vault }: Props) {
                   <Toggle label={e.requireConfirmation ? 'Confirm changes' : 'No confirm'} checked={Boolean(e.requireConfirmation)} disabled={busyId === e.id} onChange={() => void toggleRequireConfirmation(e)} />
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" disabled={busyId === e.id} onClick={() => { setChangeTarget(e); setNewPassword(''); setConfirm(false) }} className="min-h-11 rounded-xl bg-blue-800 px-3 text-sm font-semibold text-white">
+                  <button type="button" disabled={busyId === e.id} onClick={() => { setChangeTarget(e); setNewPassword(''); setConfirm(false) }} className="min-h-11 rounded-xl bg-[rgb(var(--vk-accent-strong))] px-3 text-sm font-semibold text-white">
                     Change password
                   </button>
-                  <button type="button" disabled={busyId === e.id} onClick={() => void snooze(e, 7)} className="min-h-11 rounded-xl border border-slate-400 px-3 text-sm font-medium">
+                  <button type="button" disabled={busyId === e.id} onClick={() => void snooze(e, 7)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] px-3 text-sm font-medium text-[rgb(var(--vk-text))]">
                     Snooze 7d
                   </button>
                   {e.archivedAt ? (
-                    <button type="button" disabled={busyId === e.id} onClick={() => void restoreArchived(e)} className="min-h-11 rounded-xl border border-slate-400 px-3 text-sm font-medium">Restore</button>
+                    <button type="button" disabled={busyId === e.id} onClick={() => void restoreArchived(e)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] px-3 text-sm font-medium text-[rgb(var(--vk-text))]">Restore</button>
                   ) : (
-                    <button type="button" disabled={busyId === e.id} onClick={() => void archive(e)} className="min-h-11 rounded-xl border border-slate-400 px-3 text-sm font-medium">Archive</button>
+                    <button type="button" disabled={busyId === e.id} onClick={() => void archive(e)} className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] px-3 text-sm font-medium text-[rgb(var(--vk-text))]">Archive</button>
                   )}
                   <button type="button" disabled={busyId === e.id} onClick={() => void permanentDelete(e)} className="min-h-11 rounded-xl border border-red-700 px-3 text-sm font-medium text-red-800">
                     Delete
@@ -268,13 +268,13 @@ export function Applications({ vault }: Props) {
 
       {changeTarget && (
         <div role="dialog" aria-label="Change password" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-4 shadow-xl dark:bg-slate-900">
+          <div className="w-full max-w-md rounded-2xl bg-[rgb(var(--vk-surface))] p-4 shadow-xl">
             <h2 className="text-lg font-semibold">Change password for {changeTarget.username || changeTarget.title}</h2>
-            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
+            <p className="mt-1 text-sm text-[rgb(var(--vk-text-muted))]">
               This only updates VaultKey after you confirm the new password was accepted by the provider. Opening the provider page does not mean it changed.
             </p>
             {changeTarget.url && (
-              <a href={changeTarget.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-blue-800 underline dark:text-blue-300">
+              <a href={changeTarget.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-[rgb(var(--vk-accent))] underline">
                 Open provider page
               </a>
             )}
@@ -284,7 +284,7 @@ export function Applications({ vault }: Props) {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="min-h-11 rounded-xl border border-slate-400 bg-white px-3 text-base dark:bg-slate-800"
+                className="min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]"
                 autoComplete="new-password"
               />
             </label>
@@ -293,10 +293,10 @@ export function Applications({ vault }: Props) {
               I confirmed this password works on the provider
             </label>
             <div className="mt-4 flex gap-2">
-              <button type="button" disabled={!newPassword || !confirm || busyId === changeTarget.id} onClick={() => void submitChange()} className="min-h-11 flex-1 rounded-xl bg-blue-800 px-3 text-sm font-semibold text-white disabled:opacity-50">
+              <button type="button" disabled={!newPassword || !confirm || busyId === changeTarget.id} onClick={() => void submitChange()} className="min-h-11 flex-1 rounded-xl bg-[rgb(var(--vk-accent-strong))] px-3 text-sm font-semibold text-white disabled:opacity-50">
                 {busyId === changeTarget.id ? 'Saving…' : 'Save new password'}
               </button>
-              <button type="button" onClick={() => { setChangeTarget(null); setNewPassword(''); setConfirm(false) }} className="min-h-11 flex-1 rounded-xl border border-slate-400 px-3 text-sm font-medium">
+              <button type="button" onClick={() => { setChangeTarget(null); setNewPassword(''); setConfirm(false) }} className="min-h-11 flex-1 rounded-xl border border-[rgb(var(--vk-border))] px-3 text-sm font-medium text-[rgb(var(--vk-text))]">
                 Cancel
               </button>
             </div>

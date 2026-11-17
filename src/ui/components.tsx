@@ -4,7 +4,7 @@ import type { Strength } from '../generator'
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' }
 
 const BUTTON_STYLES = {
-  primary: 'bg-[rgb(var(--vk-accent-strong))] text-white shadow-sm hover:opacity-90 active:scale-[0.98]',
+  primary: 'bg-[rgb(var(--vk-accent-strong))] text-white shadow-sm hover:bg-[rgb(var(--vk-accent-stronger))] active:scale-[0.98]',
   secondary:
     'border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] text-[rgb(var(--vk-text))] shadow-sm hover:bg-[rgb(var(--vk-surface-2))]',
   danger: 'bg-[rgb(var(--vk-danger))] text-white shadow-sm hover:opacity-90 active:scale-[0.98]',
@@ -28,7 +28,7 @@ export function Field({ label, hint, error, ...input }: { label: string; hint?: 
         {label}
       </label>
       {hint && (
-        <p id={`${id}-hint`} className="text-sm text-slate-700 dark:text-slate-300">
+        <p id={`${id}-hint`} className="text-sm text-[rgb(var(--vk-text-muted))]">
           {hint}
         </p>
       )}
@@ -58,7 +58,7 @@ export function TextArea({ label, ...input }: { label: string } & TextareaHTMLAt
       <textarea
         id={id}
         rows={4}
-        className="rounded-xl border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 shadow-sm transition-colors focus:border-blue-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-400"
+        className="rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 py-2 text-base text-[rgb(var(--vk-text))] shadow-sm transition-colors focus:border-[rgb(var(--vk-accent))] dark:focus:border-[rgb(var(--vk-accent))]"
         {...input}
       />
     </div>
@@ -114,6 +114,18 @@ export function StrengthMeter({ strength }: { strength: Strength | null }) {
       </p>
     </div>
   )
+}
+
+export function EmptyState({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={`rounded-2xl border border-dashed border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-6 text-center text-[rgb(var(--vk-text-muted))] ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+export function Skeleton({ className = '' }: { className?: string }) {
+  return <div aria-hidden="true" className={`animate-pulse rounded-xl bg-[rgb(var(--vk-surface-2))] ${className}`} />
 }
 
 export function Screen({ title, children }: { title: string; children: ReactNode }) {

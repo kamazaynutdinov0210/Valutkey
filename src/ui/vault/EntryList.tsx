@@ -1,6 +1,6 @@
 ﻿import { useMemo } from 'react'
 import { allCategories, allTags, searchEntries, type SortKey } from '../../vault/search'
-import { Button, Field, Screen, Toggle } from '../components'
+import { Button, EmptyState, Field, Screen, Toggle } from '../components'
 import type { VaultApi } from '../useVault'
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
   onCategory: (c: string | undefined) => void
 }
 
-const SELECT = 'min-h-11 rounded-xl border border-slate-500 bg-white px-3 text-base text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+const SELECT = 'min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]'
 
 export function EntryList({ vault, query, onQuery, tag, onTag, onOpen, onAdd, dueCount, onReview, onHealth, sort, onSort, favoritesOnly, onFavoritesOnly, category, onCategory }: Props) {
   const tags = useMemo(() => allTags(vault.entries), [vault.entries])
@@ -31,7 +31,7 @@ export function EntryList({ vault, query, onQuery, tag, onTag, onOpen, onAdd, du
   return (
     <Screen title="Vault">
       {dueCount > 0 && (
-        <div role="status" className="flex flex-col gap-2 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-slate-800 dark:text-amber-100">
+        <div role="status" className="flex flex-col gap-2 rounded-xl border border-amber-800 bg-amber-50 p-4 text-amber-950 dark:border-amber-300 dark:bg-[rgb(var(--vk-surface))] dark:text-amber-100">
           <p className="font-medium">{dueCount === 1 ? '1 password is due for a change.' : `${dueCount} passwords are due for a change.`}</p>
           <Button variant="secondary" onClick={onReview} className="self-start">Review</Button>
         </div>
@@ -42,7 +42,7 @@ export function EntryList({ vault, query, onQuery, tag, onTag, onOpen, onAdd, du
       </div>
 
       {vault.entries.length > 0 && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40">
+        <div className="flex flex-col gap-3 rounded-2xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface-2))] p-3">
           <Field label="Search" type="search" value={query} onChange={(e) => onQuery(e.target.value)} autoComplete="off" spellCheck={false} />
           <div className="flex flex-wrap gap-2">
             <label className="flex flex-col gap-1 text-sm font-medium">Sort
@@ -67,7 +67,7 @@ export function EntryList({ vault, query, onQuery, tag, onTag, onOpen, onAdd, du
             <div role="group" aria-label="Filter by tag" className="flex flex-wrap gap-2">
               {tags.map((t) => (
                 <button key={t} type="button" aria-pressed={tag?.toLowerCase() === t.toLowerCase()} onClick={() => onTag(tag?.toLowerCase() === t.toLowerCase() ? undefined : t)}
-                  className="min-h-11 rounded-full border border-slate-500 px-4 text-sm font-medium aria-pressed:border-blue-900 aria-pressed:bg-blue-100 aria-pressed:text-blue-900 dark:aria-pressed:border-blue-200 dark:aria-pressed:bg-slate-700 dark:aria-pressed:text-blue-100">{t}</button>
+                  className="min-h-11 rounded-full border border-[rgb(var(--vk-border))] px-4 text-sm font-medium aria-pressed:border-[rgb(var(--vk-accent))] aria-pressed:bg-[rgb(var(--vk-accent-soft))] aria-pressed:text-[rgb(var(--vk-accent))]">{t}</button>
               ))}
             </div>
           )}
@@ -75,20 +75,20 @@ export function EntryList({ vault, query, onQuery, tag, onTag, onOpen, onAdd, du
       )}
 
       {vault.entries.length === 0 ? (
-        <p>No passwords yet. Tap “Add password” to save your first one.</p>
+        <EmptyState><p>No passwords yet. Tap “Add password” to save your first one.</p></EmptyState>
       ) : shown.length === 0 ? (
-        <p role="status">Nothing matches your search.</p>
+        <EmptyState><p role="status">Nothing matches your search.</p></EmptyState>
       ) : (
         <ul className="flex flex-col gap-2">
           {shown.map((e) => (
             <li key={e.id}>
-              <button type="button" onClick={() => onOpen(e.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-left shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
+              <button type="button" onClick={() => onOpen(e.id)} className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-4 py-3 text-left shadow-sm transition-colors hover:bg-[rgb(var(--vk-surface-2))]">
                 <span className="min-w-0">
                   <span className="flex items-center gap-2 font-semibold">{e.favorite && <span aria-label="Favorite">★</span>}<span className="truncate">{e.title}</span></span>
-                  {e.username && <span className="block truncate text-sm text-slate-700 dark:text-slate-300">{e.username}</span>}
-                  {(e.category || e.tags.length > 0) && <span className="mt-1 flex flex-wrap gap-1 text-xs text-slate-600 dark:text-slate-400">{e.category && <span className="rounded bg-slate-100 px-2 py-0.5 dark:bg-slate-800">{e.category}</span>}{e.tags.slice(0,2).map((t)=><span key={t} className="rounded bg-slate-100 px-2 py-0.5 dark:bg-slate-800">{t}</span>)}</span>}
+                  {e.username && <span className="block truncate text-sm text-[rgb(var(--vk-text-muted))]">{e.username}</span>}
+                  {(e.category || e.tags.length > 0) && <span className="mt-1 flex flex-wrap gap-1 text-xs text-[rgb(var(--vk-text-muted))]">{e.category && <span className="rounded bg-[rgb(var(--vk-surface-2))] px-2 py-0.5">{e.category}</span>}{e.tags.slice(0,2).map((t)=><span key={t} className="rounded bg-[rgb(var(--vk-surface-2))] px-2 py-0.5">{t}</span>)}</span>}
                 </span>
-                <span className="text-slate-400">›</span>
+                <span className="text-[rgb(var(--vk-text-muted))]">›</span>
               </button>
             </li>
           ))}

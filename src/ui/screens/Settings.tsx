@@ -8,10 +8,11 @@ import { BackupSection } from './BackupSection'
 import { SecuritySection } from './SecuritySection'
 import { ActivitySection } from './ActivitySection'
 import { ImportSection } from './ImportSection'
+import { PrivacySection } from './PrivacySection'
 import { DataSection, InstallSection, ReminderSection } from './SettingsSections'
 
 const SELECT_STYLE =
-  'min-h-11 rounded-xl border border-slate-500 bg-white px-3 text-base text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+  'min-h-11 rounded-xl border border-[rgb(var(--vk-border))] bg-[rgb(var(--vk-surface))] px-3 text-base text-[rgb(var(--vk-text))]'
 
 interface Props {
   vault: VaultApi
@@ -72,11 +73,12 @@ export function Settings({ vault, vaultKey, vaultId, minutes, onMinutesChange, b
       <BackupSection sync={sync} onChanged={onSynced} vaultKey={vaultKey} vaultId={vaultId} />
       <ImportSection vault={vault} vaultKey={vaultKey} vaultId={vaultId} />
       <ActivitySection vaultKey={vaultKey} vaultId={vaultId} />
+<PrivacySection />
       <ReminderSection background={background} onBackgroundChange={onBackgroundChange} />
       <InstallSection />
       <DataSection />
 
-      <p className="text-sm text-slate-700 dark:text-slate-300">
+      <p className="text-sm text-[rgb(var(--vk-text-muted))]">
         VaultKey 1.0 (release candidate). Everything stays on this device and is locked with your master password. VaultKey also locks when you close it.
       </p>
     </Screen>

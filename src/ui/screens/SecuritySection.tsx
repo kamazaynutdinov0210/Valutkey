@@ -46,7 +46,7 @@ function useAction(explain?: (e: unknown) => string | undefined) {
 
 function Panel({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-400 dark:border-slate-600">
+    <div className="rounded-xl border border-[rgb(var(--vk-border))]">
       <button type="button" aria-expanded={open} onClick={onToggle} className="flex min-h-11 w-full items-center justify-between px-4 text-left font-semibold">
         {title}
         <span aria-hidden="true">{open ? '−' : '+'}</span>

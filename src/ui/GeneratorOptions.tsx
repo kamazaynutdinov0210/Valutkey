@@ -57,7 +57,7 @@ function PasswordOptions({ settings, onChange }: Props<PasswordSettings>) {
           max={128}
           value={settings.length}
           onChange={(e) => onChange({ ...settings, length: Number(e.target.value) })}
-          className="h-11 w-full accent-blue-800 dark:accent-blue-300"
+          className="h-11 w-full accent-emerald-700 dark:accent-emerald-300"
         />
       </label>
       {kinds.map((k) => (
@@ -89,7 +89,7 @@ function PassphraseOptions({ settings, onChange }: Props<PassphraseSettings>) {
           max={12}
           value={settings.words}
           onChange={(e) => onChange({ ...settings, words: Number(e.target.value) })}
-          className="h-11 w-full accent-blue-800 dark:accent-blue-300"
+          className="h-11 w-full accent-emerald-700 dark:accent-emerald-300"
         />
       </label>
       <label className="flex flex-col gap-1 pb-2">
